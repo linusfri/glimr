@@ -24,26 +24,19 @@ import glimr/http/context.{type Context}
 import glimr/http/glimr_mist
 import glimr/router.{type RouteGroup}
 import glimr/session
-import glimr_sqlite/sqlite
+import glimr_postgres/postgres
 import mist
 
-// ------------------------------------------------------------- Configuration
-
-/// Initialize your global app state with all necessary shared
-/// resources (database pools, caches, etc.)
-///
+// -------- Configuration
 fn app() -> App {
   app.App(
-    db: sqlite.start("main"),
+    db: postgres.start("main"),
     cache: cache.start_file("main"),
     // ...
   )
 }
 
-/// Register your route groups by mapping group names to their
-/// compiled route modules. Add new route groups here by adding
-/// a case clause before the default web group.
-///
+// ---- Routes
 fn route_groups() -> List(RouteGroup(Context(App))) {
   use name <- router.load()
 
@@ -62,7 +55,7 @@ fn route_groups() -> List(RouteGroup(Context(App))) {
 /// postgres) by changing the line below.
 ///
 fn session_setup(app: App) {
-  sqlite.session_store(app.db) |> session.setup()
+  postgres.session_store(app.db) |> session.setup()
 }
 
 // ------------------------------------------------------------- Main

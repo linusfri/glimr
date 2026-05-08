@@ -16,3 +16,14 @@ node_modules/
 priv/static/*
 !priv/static/images/
 *.db
+
+# Devenv
+.devenv*
+devenv.local.nix
+devenv.local.yaml
+
+# direnv
+.direnv
+
+# pre-commit
+.pre-commit-config.yaml
