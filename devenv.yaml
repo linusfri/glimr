@@ -2,8 +2,6 @@
 inputs:
   nixpkgs:
     url: github:cachix/devenv-nixpkgs/rolling
-  devenv:
-    url: /home/linus/Personal/devenv
 
 # If you're using non-OSS software, you can set allowUnfree to true.
 # allowUnfree: true
