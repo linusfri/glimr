@@ -8,16 +8,17 @@
 //// https://github.com/glimr-org/glimr?tab=readme-ov-file#direct-pattern-matching
 ////
 
-import app/http/controllers/api/welcome_controller as api_welcome_controller
-import gleam/http.{Get}
+import app/http/controllers/api/user_controller as api_user_controller
+import gleam/http.{Get, Post}
 import glimr/http/response
 
-pub fn routes(path, method, _ctx) {
+pub fn routes(path, method, ctx) {
   case path {
-    ["api", "welcome"] ->
+    ["api", "user"] ->
       case method {
-        Get -> api_welcome_controller.show()
-        _ -> response.method_not_allowed([Get])
+        Get -> api_user_controller.show()
+        Post -> api_user_controller.store(ctx)
+        _ -> response.method_not_allowed([Get, Post])
       }
 
     _ -> response.not_found()

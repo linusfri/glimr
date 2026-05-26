@@ -12,6 +12,5 @@ pub type App {
   App(
     db: DbPool,
     cache: CachePool,
-    // ...
   )
 }

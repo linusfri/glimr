@@ -1,0 +1,18 @@
+{
+  "tables": {
+    "users": {
+      "columns": [
+        {"name": "id", "type": "Id", "nullable": false, "has_default": false},
+        {"name": "first_name", "type": "String", "nullable": false, "has_default": false},
+        {"name": "last_name", "type": "String", "nullable": false, "has_default": false},
+        {"name": "phone", "type": "String", "nullable": true, "has_default": false},
+        {"name": "email", "type": "String", "nullable": false, "has_default": false},
+        {"name": "created_at", "type": "UnixTimestamp", "nullable": false, "has_default": false},
+        {"name": "updated_at", "type": "UnixTimestamp", "nullable": false, "has_default": false}
+      ],
+      "indexes": [
+        {"columns": ["email"], "unique": true, "name": null}
+      ]
+    }
+  }
+}

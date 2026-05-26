@@ -36,7 +36,6 @@ pub fn handle(
         rescue_crashes.run,
         handle_head.run,
         load_session.run,
-        // ...
       ]
       |> middleware.apply(ctx, router)
     }
@@ -53,7 +52,6 @@ pub fn handle(
         rescue_crashes.run,
         handle_head.run,
         load_session.run,
-        // ...
       ]
       |> middleware.apply(ctx, router)
     }
