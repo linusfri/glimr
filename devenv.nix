@@ -45,13 +45,19 @@ in
 
     processes = {
       application = {
-        exec = "gleam run glimr run";
+        exec = "./glimr run";
         after = [ "devenv:processes:postgres" ];
       };
     };
 
-    languages.gleam = {
-      enable = true;
+    languages = {
+      gleam = {
+        enable = true;
+      };
+      javascript = {
+        enable = true;
+        npm.enable = true;
+      };
     };
   };
 }

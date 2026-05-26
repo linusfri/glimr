@@ -12,6 +12,7 @@ import compiled/loom/components/icons/star as components_icons_star
 import compiled/loom/components/layouts/app as components_layouts_app
 import compiled/loom/components/logo as components_logo
 import gleam/string_tree.{type StringTree}
+import glimr/http/response.{type Response}
 import glimr/loom/runtime
 
 pub fn render() -> StringTree {
@@ -31,7 +32,7 @@ pub fn render() -> StringTree {
           runtime.Attribute("class", "mb-3 fill-mist-200"),
         ]),
         string_tree.from_strings([
-          "\n      </div>\n\n      <div class=\"text-[19px] font-semibold text-mist-700 leading-tight mb-3\">\n        Welcome to Glimr\n      </div>\n\n      <div class=\"mb-6 text-[16px] text-mist-400 leading-snug\">\n        Build scalable web applications that LLM's can understand, and you can\n        trust.\n      </div>\n\n      <div class=\"flex items-center justify-center gap-3\">\n        ",
+          "\n      </div>\n\n      <div class=\"text-[19px] font-semibold text-mist-700 leading-tight mb-3\">\n        Welcome to Glimr!\n      </div>\n\n      <div class=\"mb-6 text-[16px] text-mist-400 leading-snug\">\n        Build scalable web applications that LLM's can understand, and you can\n        trust.\n      </div>\n\n      <div class=\"flex items-center justify-center gap-3\">\n        ",
         ]),
         components_button.render(
           href: "https://github.com/glimr-org/glimr?tab=readme-ov-file#glimr-",
@@ -88,4 +89,8 @@ pub fn render() -> StringTree {
     ),
     string_tree.from_strings(["\n"]),
   ])
+}
+
+pub fn ok() -> Response {
+  render() |> response.string_tree(200)
 }
