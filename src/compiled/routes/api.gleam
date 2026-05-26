@@ -14,9 +14,9 @@ import glimr/http/response
 
 pub fn routes(path, method, ctx) {
   case path {
-    ["api", "user"] ->
+    ["api", "users"] ->
       case method {
-        Get -> api_user_controller.show()
+        Get -> api_user_controller.show(ctx)
         Post -> api_user_controller.store(ctx)
         _ -> response.method_not_allowed([Get, Post])
       }

@@ -1,4 +1,6 @@
 import app/app.{type App}
+import gleam/option
+import gleam/string
 import glimr/forms/validator.{type FormData, type Rule}
 import glimr/http/context.{type Context}
 import glimr/http/response.{type Response}
@@ -9,7 +11,12 @@ import glimr/http/response.{type Response}
 ///
 pub type Data {
   // Data(name: String)
-  Data(first_name: String, last_name: String, email: String)
+  Data(
+    first_name: String,
+    last_name: String,
+    email: String,
+    phone: option.Option(String),
+  )
 }
 
 /// Define your form's validation rules
@@ -33,6 +40,10 @@ fn data(data: FormData) -> Data {
   Data(
     first_name: data.get("first_name"),
     last_name: data.get("last_name"),
+    phone: case string.is_empty(data.get("phone")) {
+      True -> option.None
+      False -> option.Some(data.get("phone"))
+    },
     email: data.get("email"),
   )
 }
