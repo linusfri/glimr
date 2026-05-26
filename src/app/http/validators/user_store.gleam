@@ -10,7 +10,6 @@ import glimr/http/response.{type Response}
 /// Define the shape of the data returned after validation
 ///
 pub type Data {
-  // Data(name: String)
   Data(
     first_name: String,
     last_name: String,
