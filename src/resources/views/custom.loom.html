@@ -1,0 +1,12 @@
+---
+  import glimr/http/context.{type Context}
+  import glimr/session
+  import app/app.{type App}
+  import gleam/result
+
+  props(ctx: Context(App))
+---
+
+<x-layouts:app>
+  <h1>{{ session.get(ctx.session, "message") |> result.unwrap("") }}</h1>
+</x-layouts:app>

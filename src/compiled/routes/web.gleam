@@ -11,6 +11,7 @@
 import app/http/controllers/auth/login_controller as auth_login_controller
 import app/http/controllers/auth/logout_controller as auth_logout_controller
 import app/http/controllers/auth/register_controller as auth_register_controller
+import app/http/controllers/base/custom_controller as base_custom_controller
 import app/http/controllers/dashboard_controller
 import app/http/controllers/welcome_controller
 import gleam/http.{Get, Post}
@@ -22,6 +23,12 @@ pub fn routes(path, method, ctx) {
     [] ->
       case method {
         Get -> welcome_controller.show()
+        _ -> response.method_not_allowed([Get])
+      }
+
+    ["custom"] ->
+      case method {
+        Get -> base_custom_controller.show(ctx)
         _ -> response.method_not_allowed([Get])
       }
 
