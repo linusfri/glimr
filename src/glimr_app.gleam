@@ -18,6 +18,7 @@ import app/http/kernel
 import compiled/routes/api
 import compiled/routes/web
 import gleam/erlang/process
+import gleam/option
 import glimr/cache
 import glimr/config
 import glimr/http/context.{type Context}
@@ -32,6 +33,7 @@ fn app() -> App {
   app.App(
     db: postgres.start("main"),
     cache: cache.start_file("main"),
+    user: option.None,
     // ...
   )
 }

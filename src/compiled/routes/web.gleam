@@ -8,16 +8,65 @@
 //// https://github.com/glimr-org/glimr?tab=readme-ov-file#direct-pattern-matching
 ////
 
+import app/http/controllers/auth/login_controller as auth_login_controller
+import app/http/controllers/auth/logout_controller as auth_logout_controller
+import app/http/controllers/auth/register_controller as auth_register_controller
+import app/http/controllers/dashboard_controller
 import app/http/controllers/welcome_controller
-import gleam/http.{Get}
+import gleam/http.{Get, Post}
+import glimr/http/middleware
 import glimr/http/response
 
-pub fn routes(path, method, _ctx) {
+pub fn routes(path, method, ctx) {
   case path {
     [] ->
       case method {
         Get -> welcome_controller.show()
         _ -> response.method_not_allowed([Get])
+      }
+
+    ["dashboard"] ->
+      case method {
+        Get -> dashboard_controller.show(ctx)
+        _ -> response.method_not_allowed([Get])
+      }
+
+    ["login"] ->
+      case method {
+        Get -> {
+          use ctx <- middleware.apply(auth_login_controller.middleware(), ctx)
+          auth_login_controller.show(ctx)
+        }
+        Post -> {
+          use ctx <- middleware.apply(auth_login_controller.middleware(), ctx)
+          auth_login_controller.store(ctx)
+        }
+        _ -> response.method_not_allowed([Get, Post])
+      }
+
+    ["logout"] ->
+      case method {
+        Post -> auth_logout_controller.destroy(ctx)
+        _ -> response.method_not_allowed([Post])
+      }
+
+    ["register"] ->
+      case method {
+        Get -> {
+          use ctx <- middleware.apply(
+            auth_register_controller.middleware(),
+            ctx,
+          )
+          auth_register_controller.show(ctx)
+        }
+        Post -> {
+          use ctx <- middleware.apply(
+            auth_register_controller.middleware(),
+            ctx,
+          )
+          auth_register_controller.store(ctx)
+        }
+        _ -> response.method_not_allowed([Get, Post])
       }
 
     _ -> response.not_found()

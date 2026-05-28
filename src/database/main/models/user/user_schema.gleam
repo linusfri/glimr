@@ -1,17 +1,23 @@
 import glimr/db/schema
 
-// docs: https://github.com/glimr-org/glimr?tab=readme-ov-file#migrations
-
 pub const table_name = "users"
+
+pub const authenticatable = True
+
+pub const max_login_attempts = 5
+
+pub const lockout_seconds = 60
 
 pub fn definition() {
   schema.table(table_name, [
-    schema.id() |> schema.auto_uuid,
+    schema.id(),
+    schema.string("email"),
     schema.string("first_name"),
     schema.string("last_name"),
-    schema.string("phone") |> schema.nullable(),
-    schema.string("email"),
+    schema.string("password"),
     schema.unix_timestamps(),
   ])
-  |> schema.indexes([schema.unique(["email"])])
+  |> schema.indexes([
+    schema.unique(["email"]),
+  ])
 }
