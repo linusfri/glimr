@@ -64,6 +64,68 @@ type PriceDetails {
   WinterSecurity(groups: List(Group))
 }
 
+// --- Calculated price output ---
+
+// Most price fields carry both a current value (possibly discounted) and the original
+type PriceValue {
+  PriceValue(value: Float, original_value: Float)
+}
+
+type Comparison {
+  Comparison(consumption: String, price: String)
+}
+
+// Common calculated fields shared by all form types
+type CalculatedPrice {
+  CalculatedPrice(
+    energy_source: PriceValue,
+    yearly_fee: Float,
+    yearly_kwh_fee: PriceValue,
+    vat: PriceValue,
+    kwh_total: PriceValue,
+    variable_costs: PriceValue,
+    surcharge: PriceValue,
+    spot_price: PriceValue,
+    total: PriceValue,
+    comparisons: List(Comparison),
+    breakdown: CalculatedBreakdown,
+  )
+}
+
+// Mix has a different kwh_price shape and different fee/lime fields
+type CalculatedBreakdown {
+  StandardBreakdown(
+    kwh_price: Float,
+    kwh_price_incl_vat: Float,
+    kwh_price_incl_fees: PriceValue,
+    kwh_price_incl_fees_incl_vat: PriceValue,
+    lime_price: LimePrice,
+  )
+  MixBreakdown(
+    kwh_price: Float,
+    kwh_price_incl_vat: Float,
+    fixed_kwh_price: SplitKwhPrice,
+    variable_kwh_price: SplitKwhPrice,
+    variable_kwh_price_incl_fees: PriceValue,
+    variable_kwh_price_incl_fees_incl_vat: PriceValue,
+    lime_price: LimePrice,
+  )
+}
+
+type SplitKwhPrice {
+  SplitKwhPrice(
+    value: Float,
+    original_value: Float,
+    value_incl_vat: Float,
+    percent: Float,
+  )
+}
+
+type LimePrice {
+  StandardLimePrice(rate: Float)
+  MixLimePrice(fixed: Float, variable: Float, fixed_percent: Float)
+}
+
 type SigningAction {
   NewAgreement
   Resign
