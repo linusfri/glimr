@@ -21,6 +21,7 @@ in
 
     packages = with pkgs; [
       git
+      graphviz
     ];
 
     env = {
@@ -58,6 +59,7 @@ in
         enable = true;
         npm.enable = true;
       };
+      java.enable = true;
     };
   };
 }

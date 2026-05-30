@@ -1,16 +1,15 @@
 import gleam/dict.{type Dict}
 import gleam/list.{type List}
+import gleam/option.{type Option}
 import gleam/time/calendar.{type Date, type Month}
 import gleam/time/timestamp.{type Timestamp}
 
 type Agreement {
   Agreement(
-    fields: List(Dict(String, String)),
     form: Form,
-    start: SigningAction,
+    sign_type: SignType,
     vat: VatRate,
     energy_sources: List(EnergySource),
-    attachments: List(Attachment),
   )
 }
 
@@ -68,11 +67,11 @@ type PriceDetails {
 
 // Most price fields carry both a current value (possibly discounted) and the original
 type PriceValue {
-  PriceValue(value: Float, original_value: Float)
+  PriceValue(value: Float, valueInclVat: Float, original_value: Float)
 }
 
 type Comparison {
-  Comparison(consumption: String, price: String)
+  Comparison(consumption: Float, price: Float)
 }
 
 // Common calculated fields shared by all form types
@@ -126,7 +125,7 @@ type LimePrice {
   MixLimePrice(fixed: Float, variable: Float, fixed_percent: Float)
 }
 
-type SigningAction {
+type SignType {
   NewAgreement
   Resign
   Move
@@ -138,10 +137,53 @@ type EnergySource {
   EnergySource(label: String, value: String, price: Float)
 }
 
-type Attachment {
-  Attachment(file_id: String)
-}
-
 type VatRate {
   VatRate(percent: Float)
+}
+
+// --- Agreement submission ---
+
+type AgreementSubmission {
+  AgreementSubmission(
+    sign_type: SignType,
+    start_date: Date,
+    end_date: Date,
+    branch: Option(String),
+    energy_source: String,
+    exchange_right: Bool,
+    other_supplier: Bool,
+    yearly_fee: Float,
+    notes: Option(String),
+    facility: SubmissionFacility,
+    campaign: Option(SubmissionCampaign),
+    price: SubmissionPrice,
+  )
+}
+
+type SubmissionFacility {
+  SubmissionFacility(
+    facility_id: Option(String),
+    yearly_consumption: Int,
+    portfolio: Option(String),
+  )
+}
+
+type SubmissionCampaign {
+  SubmissionCampaign(campaign_id: String, offer_type: Option(String))
+}
+
+type SubmissionPrice {
+  FixedSubmission(price: Float, price_addition: Float)
+  VariableSubmission(price_variable: Float, price_addition: Float)
+  MixSubmission(
+    price: Float,
+    price_variable: Float,
+    mixed_variable_portion: Float,
+    price_addition: Float,
+  )
+  SpotSubmission(
+    hourly_price: Float,
+    price_variable: Float,
+    price_addition: Float,
+  )
 }
