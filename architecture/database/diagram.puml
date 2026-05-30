@@ -42,14 +42,14 @@ entity form_configs {
 /'Reasoning here is that a form type has uniform costs'
 that always applies to the form regardless of pricing that month'/
 entity form_configs_variable {
-  * form_configs_id : int <<FK>>
+  * form_config_id : int <<FK>>
   --
   * yearly_fee : float
   * variable_costs : float
 }
 
 entity form_configs_spot {
-  * form_configs_id : int <<FK>>
+  * form_config_id : int <<FK>>
   --
   * yearly_fee : float
   * variable_costs : float
@@ -57,7 +57,7 @@ entity form_configs_spot {
 }
 
 entity form_configs_mix {
-  * form_configs_id : int <<FK>>
+  * form_config_id : int <<FK>>
   --
   * variable_costs : float
 }
@@ -81,7 +81,7 @@ form_configs ||--o| form_configs_mix
 entity groups {
   * id : int
   --
-  * form_configs_id : int <<FK>>
+  * form_config_id : int <<FK>>
   * group_type : enum  /' fixed|mix '/
   * title : varchar
   * contract_period_months : int
@@ -106,7 +106,7 @@ groups ||--o| groups_mix
 entity form_prices {
   * id : int
   --
-  * form_configs_id : int <<FK>>  /' variable|spot '/
+  * form_config_id : int <<FK>>  /' variable|spot '/
   * signable_from : date
   * signable_until : date
   * is_best_value : bool
