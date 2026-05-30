@@ -1,0 +1,258 @@
+@startuml glimr_database
+
+skinparam linetype ortho
+skinparam groupInheritance 2
+
+' ─────────────────────────────────────────────
+' AGREEMENTS (product definition)
+' ─────────────────────────────────────────────
+
+entity agreements {
+  * id : uuid
+  --
+  * sign_type : enum  /' new|resign|move|assigned_price|company '/
+  * vat_percent : float
+  title : varchar
+  description : varchar
+}
+
+entity energy_sources {
+  * id : uuid
+  --
+  * agreement_id : uuid <<FK>>
+  * label : varchar
+  * value : varchar
+  * price : float
+}
+
+agreements ||--o{ energy_sources
+
+' ─────────────────────────────────────────────
+' FORM CONFIGURATIONS  (CTI on PriceDetails)
+' ─────────────────────────────────────────────
+
+entity form_configs {
+  * id : uuid
+  --
+  * agreement_id : uuid <<FK>>
+  * type : enum  /' fixed|variable|mix|spot|winter_security '/
+}
+
+
+/'Reasoning here is that a form type has uniform costs'
+that always applies to the form regardless of pricing that month'/
+entity form_configs_variable {
+  * form_configs_id : uuid <<FK>>
+  --
+  * yearly_fee : float
+  * variable_costs : float
+}
+
+entity form_configs_spot {
+  * form_configs_id : uuid <<FK>>
+  --
+  * yearly_fee : float
+  * variable_costs : float
+  * surcharge : float
+}
+
+entity form_configs_mix {
+  * form_configs_id : uuid <<FK>>
+  --
+  * variable_costs : float
+}
+
+note right of form_configs
+  fixed and winter_security
+  have no extension table —
+  their data lives entirely
+  in groups
+end note
+
+agreements ||--|| form_configs
+form_configs ||--o| form_configs_variable
+form_configs ||--o| form_configs_spot
+form_configs ||--o| form_configs_mix
+
+' ─────────────────────────────────────────────
+' GROUPS  (CTI on GroupDetails)
+' ─────────────────────────────────────────────
+
+entity groups {
+  * id : uuid
+  --
+  * form_configs_id : uuid <<FK>>
+  * type : enum  /' fixed|mix '/
+  * title : varchar
+  * identifier : varchar
+  * contract_period : int
+  * yearly_fee : float
+  * visible_from : timestamptz
+  * visible_until : timestamptz
+}
+
+entity groups_mix {
+  * group_id : uuid <<FK>>
+  --
+  * fixed_percent : float
+}
+
+form_configs ||--o{ groups
+groups ||--o| groups_mix
+
+' ─────────────────────────────────────────────
+' PRICES  (split by form type)
+' ─────────────────────────────────────────────
+
+entity form_prices {
+  * id : uuid
+  --
+  * form_configs_id : uuid <<FK>>  /' variable|spot '/
+  * signable_from : date
+  * signable_until : date
+  * is_best_value : bool
+}
+
+entity group_prices {
+  * id : uuid
+  --
+  * group_id : uuid <<FK>>  /' fixed|mix|winter_security '/
+  * signable_from : date
+  * signable_until : date
+  * is_best_value : bool
+}
+
+form_configs ||--o{ form_prices
+groups ||--o{ group_prices
+
+' ─────────────────────────────────────────────
+' PRICE RATES  (CTI on PriceRate)
+' ─────────────────────────────────────────────
+
+entity form_price_rates {
+  * id : uuid
+  --
+  * form_price_id : uuid <<FK>>
+  * type : enum  /' single|monthly|split '/
+}
+
+entity group_price_rates {
+  * id : uuid
+  --
+  * group_price_id : uuid <<FK>>
+  * type : enum  /' single|monthly|split '/
+}
+
+entity price_rates_scalar {
+  * price_rate_id : uuid <<FK>>
+  --
+  * rate : float
+}
+
+entity price_rates_monthly {
+  * price_rate_id : uuid <<FK>>
+  --
+  * rate : float
+  * valid_month : varchar
+}
+
+entity price_rates_split {
+  * price_rate_id : uuid <<FK>>
+  --
+  * fixed_rate : float
+  * variable_rate : float
+}
+
+form_prices ||--|| form_price_rates
+group_prices ||--|| group_price_rates
+form_price_rates ||--o| price_rates_scalar
+form_price_rates ||--o| price_rates_monthly
+form_price_rates ||--o| price_rates_split
+group_price_rates ||--o| price_rates_scalar
+group_price_rates ||--o| price_rates_monthly
+group_price_rates ||--o| price_rates_split
+
+' ─────────────────────────────────────────────
+' AGREEMENT SUBMISSIONS
+' ─────────────────────────────────────────────
+
+entity agreement_submissions {
+  * id : uuid
+  --
+  * agreement_id : uuid <<FK>>
+  * sign_type : enum /'new|resign|move|assigned_price|company'/
+  * start_date : date
+  * end_date : date
+  branch : varchar
+  * energy_source : varchar
+  * exchange_right : bool
+  * other_supplier : bool
+  * yearly_fee : float
+  notes : text
+}
+
+entity submission_facilities {
+  * submission_id : uuid <<FK>>
+  --
+  facility_id : varchar
+  * yearly_consumption : int
+  portfolio : varchar
+}
+
+entity submission_campaigns {
+  * submission_id : uuid <<FK>>
+  --
+  * campaign_id : varchar /'Can be arbitrary string'/
+  offer_type : varchar
+}
+
+agreements ||--o{ agreement_submissions
+agreement_submissions ||--|| submission_facilities
+agreement_submissions ||--o| submission_campaigns
+
+' ─────────────────────────────────────────────
+' SUBMISSION PRICES  (CTI on SubmissionPrice)
+' ─────────────────────────────────────────────
+
+entity submission_prices {
+  * id : uuid
+  --
+  * submission_id : uuid <<FK>>
+  * type : enum  /' fixed|variable|mix|spot '/
+  * price_addition : float
+}
+
+entity submission_prices_fixed {
+  * submission_price_id : uuid <<FK>>
+  --
+  * price : float
+}
+
+entity submission_prices_variable {
+  * submission_price_id : uuid <<FK>>
+  --
+  * price_variable : float
+}
+
+entity submission_prices_mix {
+  * submission_price_id : uuid <<FK>>
+  --
+  * price : float
+  * price_variable : float
+  * mixed_variable_portion : float
+}
+
+entity submission_prices_spot {
+  * submission_price_id : uuid <<FK>>
+  --
+  * hourly_price : float
+  * price_variable : float
+}
+
+agreement_submissions ||--|| submission_prices
+submission_prices ||--o| submission_prices_fixed
+submission_prices ||--o| submission_prices_variable
+submission_prices ||--o| submission_prices_mix
+submission_prices ||--o| submission_prices_spot
+
+@enduml
