@@ -7,7 +7,13 @@ pub fn definition() {
     schema.id(),
     schema.foreign("agreement_id", "agreements")
       |> schema.on_delete(schema.Cascade),
-    schema.enum("sign_type", ["new", "resign", "move", "assigned_price", "company"]),
+    schema.enum("sign_type", [
+      "new",
+      "resign",
+      "move",
+      "assigned_price",
+      "company",
+    ]),
     schema.date("start_date"),
     schema.date("end_date"),
     schema.string("branch") |> schema.nullable(),

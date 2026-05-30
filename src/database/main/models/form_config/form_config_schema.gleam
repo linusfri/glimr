@@ -7,6 +7,12 @@ pub fn definition() {
     schema.id(),
     schema.foreign("agreement_id", "agreements")
       |> schema.on_delete(schema.Cascade),
-    schema.enum("form_type", ["fixed", "variable", "mix", "spot", "winter_security"]),
+    schema.enum("form_type", [
+      "fixed",
+      "variable",
+      "mix",
+      "spot",
+      "winter_security",
+    ]),
   ])
 }
