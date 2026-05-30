@@ -84,8 +84,7 @@ entity groups {
   * form_configs_id : uuid <<FK>>
   * type : enum  /' fixed|mix '/
   * title : varchar
-  * identifier : varchar
-  * contract_period : int
+  * contract_period_months : int
   * yearly_fee : float
   * visible_from : timestamptz
   * visible_until : timestamptz

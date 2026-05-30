@@ -20,7 +20,6 @@ type Form {
 type Group {
   Group(
     title: String,
-    identifier: String,
     contract_period: Int,
     yearly_fee: Float,
     visible_from: Timestamp,
