@@ -8,7 +8,7 @@ skinparam groupInheritance 2
 ' ─────────────────────────────────────────────
 
 entity agreements {
-  * id : uuid
+  * id : int
   --
   * sign_type : enum  /' new|resign|move|assigned_price|company '/
   * vat_percent : float
@@ -17,9 +17,9 @@ entity agreements {
 }
 
 entity energy_sources {
-  * id : uuid
+  * id : int
   --
-  * agreement_id : uuid <<FK>>
+  * agreement_id : int <<FK>>
   * label : varchar
   * value : varchar
   * price : float
@@ -32,24 +32,24 @@ agreements ||--o{ energy_sources
 ' ─────────────────────────────────────────────
 
 entity form_configs {
-  * id : uuid
+  * id : int
   --
-  * agreement_id : uuid <<FK>>
-  * type : enum  /' fixed|variable|mix|spot|winter_security '/
+  * agreement_id : int <<FK>>
+  * form_type : enum  /' fixed|variable|mix|spot|winter_security '/
 }
 
 
 /'Reasoning here is that a form type has uniform costs'
 that always applies to the form regardless of pricing that month'/
 entity form_configs_variable {
-  * form_configs_id : uuid <<FK>>
+  * form_configs_id : int <<FK>>
   --
   * yearly_fee : float
   * variable_costs : float
 }
 
 entity form_configs_spot {
-  * form_configs_id : uuid <<FK>>
+  * form_configs_id : int <<FK>>
   --
   * yearly_fee : float
   * variable_costs : float
@@ -57,7 +57,7 @@ entity form_configs_spot {
 }
 
 entity form_configs_mix {
-  * form_configs_id : uuid <<FK>>
+  * form_configs_id : int <<FK>>
   --
   * variable_costs : float
 }
@@ -79,10 +79,10 @@ form_configs ||--o| form_configs_mix
 ' ─────────────────────────────────────────────
 
 entity groups {
-  * id : uuid
+  * id : int
   --
-  * form_configs_id : uuid <<FK>>
-  * type : enum  /' fixed|mix '/
+  * form_configs_id : int <<FK>>
+  * group_type : enum  /' fixed|mix '/
   * title : varchar
   * contract_period_months : int
   * yearly_fee : float
@@ -91,7 +91,7 @@ entity groups {
 }
 
 entity groups_mix {
-  * group_id : uuid <<FK>>
+  * group_id : int <<FK>>
   --
   * fixed_percent : float
 }
@@ -104,18 +104,18 @@ groups ||--o| groups_mix
 ' ─────────────────────────────────────────────
 
 entity form_prices {
-  * id : uuid
+  * id : int
   --
-  * form_configs_id : uuid <<FK>>  /' variable|spot '/
+  * form_configs_id : int <<FK>>  /' variable|spot '/
   * signable_from : date
   * signable_until : date
   * is_best_value : bool
 }
 
 entity group_prices {
-  * id : uuid
+  * id : int
   --
-  * group_id : uuid <<FK>>  /' fixed|mix|winter_security '/
+  * group_id : int <<FK>>  /' fixed|mix|winter_security '/
   * signable_from : date
   * signable_until : date
   * is_best_value : bool
@@ -129,34 +129,54 @@ groups ||--o{ group_prices
 ' ─────────────────────────────────────────────
 
 entity form_price_rates {
-  * id : uuid
+  * id : int
   --
-  * form_price_id : uuid <<FK>>
-  * type : enum  /' single|monthly|split '/
+  * form_price_id : int <<FK>>
+  * rate_type : enum  /' single|monthly|split '/
 }
 
 entity group_price_rates {
-  * id : uuid
+  * id : int
   --
-  * group_price_id : uuid <<FK>>
-  * type : enum  /' single|monthly|split '/
+  * group_price_id : int <<FK>>
+  * rate_type : enum  /' single|monthly|split '/
 }
 
-entity price_rates_scalar {
-  * price_rate_id : uuid <<FK>>
+entity form_price_rates_scalar {
+  * form_price_rate_id : int <<FK>>
   --
   * rate : float
 }
 
-entity price_rates_monthly {
-  * price_rate_id : uuid <<FK>>
+entity form_price_rates_monthly {
+  * form_price_rate_id : int <<FK>>
   --
   * rate : float
   * valid_month : varchar
 }
 
-entity price_rates_split {
-  * price_rate_id : uuid <<FK>>
+entity form_price_rates_split {
+  * form_price_rate_id : int <<FK>>
+  --
+  * fixed_rate : float
+  * variable_rate : float
+}
+
+entity group_price_rates_scalar {
+  * group_price_rate_id : int <<FK>>
+  --
+  * rate : float
+}
+
+entity group_price_rates_monthly {
+  * group_price_rate_id : int <<FK>>
+  --
+  * rate : float
+  * valid_month : varchar
+}
+
+entity group_price_rates_split {
+  * group_price_rate_id : int <<FK>>
   --
   * fixed_rate : float
   * variable_rate : float
@@ -164,21 +184,21 @@ entity price_rates_split {
 
 form_prices ||--|| form_price_rates
 group_prices ||--|| group_price_rates
-form_price_rates ||--o| price_rates_scalar
-form_price_rates ||--o| price_rates_monthly
-form_price_rates ||--o| price_rates_split
-group_price_rates ||--o| price_rates_scalar
-group_price_rates ||--o| price_rates_monthly
-group_price_rates ||--o| price_rates_split
+form_price_rates ||--o| form_price_rates_scalar
+form_price_rates ||--o| form_price_rates_monthly
+form_price_rates ||--o| form_price_rates_split
+group_price_rates ||--o| group_price_rates_scalar
+group_price_rates ||--o| group_price_rates_monthly
+group_price_rates ||--o| group_price_rates_split
 
 ' ─────────────────────────────────────────────
 ' AGREEMENT SUBMISSIONS
 ' ─────────────────────────────────────────────
 
 entity agreement_submissions {
-  * id : uuid
+  * id : int
   --
-  * agreement_id : uuid <<FK>>
+  * agreement_id : int <<FK>>
   * sign_type : enum /'new|resign|move|assigned_price|company'/
   * start_date : date
   * end_date : date
@@ -191,7 +211,7 @@ entity agreement_submissions {
 }
 
 entity submission_facilities {
-  * submission_id : uuid <<FK>>
+  * submission_id : int <<FK>>
   --
   facility_id : varchar
   * yearly_consumption : int
@@ -199,7 +219,7 @@ entity submission_facilities {
 }
 
 entity submission_campaigns {
-  * submission_id : uuid <<FK>>
+  * submission_id : int <<FK>>
   --
   * campaign_id : varchar /'Can be arbitrary string'/
   offer_type : varchar
@@ -214,27 +234,27 @@ agreement_submissions ||--o| submission_campaigns
 ' ─────────────────────────────────────────────
 
 entity submission_prices {
-  * id : uuid
+  * id : int
   --
-  * submission_id : uuid <<FK>>
-  * type : enum  /' fixed|variable|mix|spot '/
+  * submission_id : int <<FK>>
+  * price_type : enum  /' fixed|variable|mix|spot '/
   * price_addition : float
 }
 
 entity submission_prices_fixed {
-  * submission_price_id : uuid <<FK>>
+  * submission_price_id : int <<FK>>
   --
   * price : float
 }
 
 entity submission_prices_variable {
-  * submission_price_id : uuid <<FK>>
+  * submission_price_id : int <<FK>>
   --
   * price_variable : float
 }
 
 entity submission_prices_mix {
-  * submission_price_id : uuid <<FK>>
+  * submission_price_id : int <<FK>>
   --
   * price : float
   * price_variable : float
@@ -242,7 +262,7 @@ entity submission_prices_mix {
 }
 
 entity submission_prices_spot {
-  * submission_price_id : uuid <<FK>>
+  * submission_price_id : int <<FK>>
   --
   * hourly_price : float
   * price_variable : float

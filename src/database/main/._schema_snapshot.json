@@ -1,5 +1,284 @@
 {
   "tables": {
+    "agreement_submissions": {
+      "columns": [
+        {"name": "id", "type": "Id", "nullable": false, "has_default": false},
+        {"name": "agreement_id", "type": "Foreign(agreements,onDelete:Cascade)", "nullable": false, "has_default": false},
+        {"name": "sign_type", "type": "Enum(sign_type:new,resign,move,assigned_price,company)", "nullable": false, "has_default": false},
+        {"name": "start_date", "type": "Date", "nullable": false, "has_default": false},
+        {"name": "end_date", "type": "Date", "nullable": false, "has_default": false},
+        {"name": "branch", "type": "String", "nullable": true, "has_default": false},
+        {"name": "energy_source", "type": "String", "nullable": false, "has_default": false},
+        {"name": "exchange_right", "type": "Boolean", "nullable": false, "has_default": false},
+        {"name": "other_supplier", "type": "Boolean", "nullable": false, "has_default": false},
+        {"name": "yearly_fee", "type": "Float", "nullable": false, "has_default": false},
+        {"name": "notes", "type": "Text", "nullable": true, "has_default": false}
+      ],
+      "indexes": [
+
+      ]
+    },
+    "agreements": {
+      "columns": [
+        {"name": "id", "type": "Id", "nullable": false, "has_default": false},
+        {"name": "sign_type", "type": "Enum(sign_type:new,resign,move,assigned_price,company)", "nullable": false, "has_default": false},
+        {"name": "vat_percent", "type": "Float", "nullable": false, "has_default": false},
+        {"name": "title", "type": "String", "nullable": true, "has_default": false},
+        {"name": "description", "type": "Text", "nullable": true, "has_default": false}
+      ],
+      "indexes": [
+
+      ]
+    },
+    "energy_sources": {
+      "columns": [
+        {"name": "id", "type": "Id", "nullable": false, "has_default": false},
+        {"name": "agreement_id", "type": "Foreign(agreements,onDelete:Cascade)", "nullable": false, "has_default": false},
+        {"name": "label", "type": "String", "nullable": false, "has_default": false},
+        {"name": "value", "type": "String", "nullable": false, "has_default": false},
+        {"name": "price", "type": "Float", "nullable": false, "has_default": false}
+      ],
+      "indexes": [
+
+      ]
+    },
+    "form_configs": {
+      "columns": [
+        {"name": "id", "type": "Id", "nullable": false, "has_default": false},
+        {"name": "agreement_id", "type": "Foreign(agreements,onDelete:Cascade)", "nullable": false, "has_default": false},
+        {"name": "form_type", "type": "Enum(form_type:fixed,variable,mix,spot,winter_security)", "nullable": false, "has_default": false}
+      ],
+      "indexes": [
+
+      ]
+    },
+    "form_configs_mix": {
+      "columns": [
+        {"name": "form_config_id", "type": "Foreign(form_configs,onDelete:Cascade)", "nullable": false, "has_default": false},
+        {"name": "variable_costs", "type": "Float", "nullable": false, "has_default": false}
+      ],
+      "indexes": [
+
+      ]
+    },
+    "form_configs_spot": {
+      "columns": [
+        {"name": "form_config_id", "type": "Foreign(form_configs,onDelete:Cascade)", "nullable": false, "has_default": false},
+        {"name": "yearly_fee", "type": "Float", "nullable": false, "has_default": false},
+        {"name": "variable_costs", "type": "Float", "nullable": false, "has_default": false},
+        {"name": "surcharge", "type": "Float", "nullable": false, "has_default": false}
+      ],
+      "indexes": [
+
+      ]
+    },
+    "form_configs_variable": {
+      "columns": [
+        {"name": "form_config_id", "type": "Foreign(form_configs,onDelete:Cascade)", "nullable": false, "has_default": false},
+        {"name": "yearly_fee", "type": "Float", "nullable": false, "has_default": false},
+        {"name": "variable_costs", "type": "Float", "nullable": false, "has_default": false}
+      ],
+      "indexes": [
+
+      ]
+    },
+    "form_price_rates": {
+      "columns": [
+        {"name": "id", "type": "Id", "nullable": false, "has_default": false},
+        {"name": "form_price_id", "type": "Foreign(form_prices,onDelete:Cascade)", "nullable": false, "has_default": false},
+        {"name": "rate_type", "type": "Enum(rate_type:single,monthly,split)", "nullable": false, "has_default": false}
+      ],
+      "indexes": [
+
+      ]
+    },
+    "form_price_rates_monthly": {
+      "columns": [
+        {"name": "form_price_rate_id", "type": "Foreign(form_price_rates,onDelete:Cascade)", "nullable": false, "has_default": false},
+        {"name": "rate", "type": "Float", "nullable": false, "has_default": false},
+        {"name": "valid_month", "type": "String", "nullable": false, "has_default": false}
+      ],
+      "indexes": [
+
+      ]
+    },
+    "form_price_rates_scalar": {
+      "columns": [
+        {"name": "form_price_rate_id", "type": "Foreign(form_price_rates,onDelete:Cascade)", "nullable": false, "has_default": false},
+        {"name": "rate", "type": "Float", "nullable": false, "has_default": false}
+      ],
+      "indexes": [
+
+      ]
+    },
+    "form_price_rates_split": {
+      "columns": [
+        {"name": "form_price_rate_id", "type": "Foreign(form_price_rates,onDelete:Cascade)", "nullable": false, "has_default": false},
+        {"name": "fixed_rate", "type": "Float", "nullable": false, "has_default": false},
+        {"name": "variable_rate", "type": "Float", "nullable": false, "has_default": false}
+      ],
+      "indexes": [
+
+      ]
+    },
+    "form_prices": {
+      "columns": [
+        {"name": "id", "type": "Id", "nullable": false, "has_default": false},
+        {"name": "form_config_id", "type": "Foreign(form_configs,onDelete:Cascade)", "nullable": false, "has_default": false},
+        {"name": "signable_from", "type": "Date", "nullable": false, "has_default": false},
+        {"name": "signable_until", "type": "Date", "nullable": false, "has_default": false},
+        {"name": "is_best_value", "type": "Boolean", "nullable": false, "has_default": true}
+      ],
+      "indexes": [
+
+      ]
+    },
+    "group_price_rates": {
+      "columns": [
+        {"name": "id", "type": "Id", "nullable": false, "has_default": false},
+        {"name": "group_price_id", "type": "Foreign(group_prices,onDelete:Cascade)", "nullable": false, "has_default": false},
+        {"name": "rate_type", "type": "Enum(rate_type:single,monthly,split)", "nullable": false, "has_default": false}
+      ],
+      "indexes": [
+
+      ]
+    },
+    "group_price_rates_monthly": {
+      "columns": [
+        {"name": "group_price_rate_id", "type": "Foreign(group_price_rates,onDelete:Cascade)", "nullable": false, "has_default": false},
+        {"name": "rate", "type": "Float", "nullable": false, "has_default": false},
+        {"name": "valid_month", "type": "String", "nullable": false, "has_default": false}
+      ],
+      "indexes": [
+
+      ]
+    },
+    "group_price_rates_scalar": {
+      "columns": [
+        {"name": "group_price_rate_id", "type": "Foreign(group_price_rates,onDelete:Cascade)", "nullable": false, "has_default": false},
+        {"name": "rate", "type": "Float", "nullable": false, "has_default": false}
+      ],
+      "indexes": [
+
+      ]
+    },
+    "group_price_rates_split": {
+      "columns": [
+        {"name": "group_price_rate_id", "type": "Foreign(group_price_rates,onDelete:Cascade)", "nullable": false, "has_default": false},
+        {"name": "fixed_rate", "type": "Float", "nullable": false, "has_default": false},
+        {"name": "variable_rate", "type": "Float", "nullable": false, "has_default": false}
+      ],
+      "indexes": [
+
+      ]
+    },
+    "group_prices": {
+      "columns": [
+        {"name": "id", "type": "Id", "nullable": false, "has_default": false},
+        {"name": "group_id", "type": "Foreign(groups,onDelete:Cascade)", "nullable": false, "has_default": false},
+        {"name": "signable_from", "type": "Date", "nullable": false, "has_default": false},
+        {"name": "signable_until", "type": "Date", "nullable": false, "has_default": false},
+        {"name": "is_best_value", "type": "Boolean", "nullable": false, "has_default": true}
+      ],
+      "indexes": [
+
+      ]
+    },
+    "groups": {
+      "columns": [
+        {"name": "id", "type": "Id", "nullable": false, "has_default": false},
+        {"name": "form_config_id", "type": "Foreign(form_configs,onDelete:Cascade)", "nullable": false, "has_default": false},
+        {"name": "group_type", "type": "Enum(group_type:fixed,mix)", "nullable": false, "has_default": false},
+        {"name": "title", "type": "String", "nullable": false, "has_default": false},
+        {"name": "contract_period_months", "type": "Int", "nullable": false, "has_default": false},
+        {"name": "yearly_fee", "type": "Float", "nullable": false, "has_default": false},
+        {"name": "visible_from", "type": "Timestamp", "nullable": false, "has_default": false},
+        {"name": "visible_until", "type": "Timestamp", "nullable": false, "has_default": false}
+      ],
+      "indexes": [
+
+      ]
+    },
+    "groups_mix": {
+      "columns": [
+        {"name": "group_id", "type": "Foreign(groups,onDelete:Cascade)", "nullable": false, "has_default": false},
+        {"name": "fixed_percent", "type": "Float", "nullable": false, "has_default": false}
+      ],
+      "indexes": [
+
+      ]
+    },
+    "submission_campaigns": {
+      "columns": [
+        {"name": "submission_id", "type": "Foreign(agreement_submissions,onDelete:Cascade)", "nullable": false, "has_default": false},
+        {"name": "campaign_id", "type": "String", "nullable": false, "has_default": false},
+        {"name": "offer_type", "type": "String", "nullable": true, "has_default": false}
+      ],
+      "indexes": [
+
+      ]
+    },
+    "submission_facilities": {
+      "columns": [
+        {"name": "submission_id", "type": "Foreign(agreement_submissions,onDelete:Cascade)", "nullable": false, "has_default": false},
+        {"name": "facility_id", "type": "String", "nullable": true, "has_default": false},
+        {"name": "yearly_consumption", "type": "Int", "nullable": false, "has_default": false},
+        {"name": "portfolio", "type": "String", "nullable": true, "has_default": false}
+      ],
+      "indexes": [
+
+      ]
+    },
+    "submission_prices": {
+      "columns": [
+        {"name": "id", "type": "Id", "nullable": false, "has_default": false},
+        {"name": "submission_id", "type": "Foreign(agreement_submissions,onDelete:Cascade)", "nullable": false, "has_default": false},
+        {"name": "price_type", "type": "Enum(price_type:fixed,variable,mix,spot)", "nullable": false, "has_default": false},
+        {"name": "price_addition", "type": "Float", "nullable": false, "has_default": false}
+      ],
+      "indexes": [
+
+      ]
+    },
+    "submission_prices_fixed": {
+      "columns": [
+        {"name": "submission_price_id", "type": "Foreign(submission_prices,onDelete:Cascade)", "nullable": false, "has_default": false},
+        {"name": "price", "type": "Float", "nullable": false, "has_default": false}
+      ],
+      "indexes": [
+
+      ]
+    },
+    "submission_prices_mix": {
+      "columns": [
+        {"name": "submission_price_id", "type": "Foreign(submission_prices,onDelete:Cascade)", "nullable": false, "has_default": false},
+        {"name": "price", "type": "Float", "nullable": false, "has_default": false},
+        {"name": "price_variable", "type": "Float", "nullable": false, "has_default": false},
+        {"name": "mixed_variable_portion", "type": "Float", "nullable": false, "has_default": false}
+      ],
+      "indexes": [
+
+      ]
+    },
+    "submission_prices_spot": {
+      "columns": [
+        {"name": "submission_price_id", "type": "Foreign(submission_prices,onDelete:Cascade)", "nullable": false, "has_default": false},
+        {"name": "hourly_price", "type": "Float", "nullable": false, "has_default": false},
+        {"name": "price_variable", "type": "Float", "nullable": false, "has_default": false}
+      ],
+      "indexes": [
+
+      ]
+    },
+    "submission_prices_variable": {
+      "columns": [
+        {"name": "submission_price_id", "type": "Foreign(submission_prices,onDelete:Cascade)", "nullable": false, "has_default": false},
+        {"name": "price_variable", "type": "Float", "nullable": false, "has_default": false}
+      ],
+      "indexes": [
+
+      ]
+    },
     "users": {
       "columns": [
         {"name": "id", "type": "Id", "nullable": false, "has_default": false},
