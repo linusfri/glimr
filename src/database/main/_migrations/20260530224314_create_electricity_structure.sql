@@ -36,7 +36,6 @@ CREATE TYPE form_type AS ENUM ('fixed', 'variable', 'mix', 'spot', 'winter_secur
 
 CREATE TABLE form_configs (
   id SERIAL PRIMARY KEY NOT NULL,
-  agreement_id INTEGER REFERENCES agreements(id) ON DELETE CASCADE NOT NULL,
   form_type form_type NOT NULL
 );
 

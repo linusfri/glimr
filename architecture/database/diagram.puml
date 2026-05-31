@@ -34,7 +34,6 @@ agreements ||--o{ energy_sources
 entity form_configs {
   * id : int
   --
-  * agreement_id : int <<FK>>
   * form_type : enum  /' fixed|variable|mix|spot|winter_security '/
 }
 
@@ -69,7 +68,6 @@ note right of form_configs
   in groups
 end note
 
-agreements ||--|| form_configs
 form_configs ||--o| form_configs_variable
 form_configs ||--o| form_configs_spot
 form_configs ||--o| form_configs_mix

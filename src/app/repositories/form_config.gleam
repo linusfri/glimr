@@ -80,12 +80,10 @@ pub type NewFormConfigPricedDetail {
 
 pub type NewFormConfig {
   NewFormConfigGrouped(
-    agreement_id: Int,
     detail: NewFormConfigGroupedDetail,
     groups: List(NewGroup),
   )
   NewFormConfigPriced(
-    agreement_id: Int,
     detail: NewFormConfigPricedDetail,
     prices: List(NewFormPrice),
   )
@@ -106,14 +104,13 @@ pub fn create(
   use conn <- db.transaction(pool, 3)
 
   case form_data {
-    NewFormConfigPriced(agreement_id:, detail:, prices:) -> {
+    NewFormConfigPriced(detail:, prices:) -> {
       let form_type = case detail {
         NewVariable(..) -> form_config.Variable
         NewSpot(..) -> form_config.Spot
       }
       use form_config <- result.try(form_config.create_wc(
         connection: conn,
-        agreement_id:,
         form_type:,
       ))
       use _ <- result.try(create_priced_detail(conn, form_config.id, detail))
@@ -125,7 +122,7 @@ pub fn create(
       Ok(form_config)
     }
 
-    NewFormConfigGrouped(agreement_id:, detail:, groups:) -> {
+    NewFormConfigGrouped(detail:, groups:) -> {
       let form_type = case detail {
         NewFixed -> form_config.Fixed
         NewWinterSecurity -> form_config.WinterSecurity
@@ -133,7 +130,6 @@ pub fn create(
       }
       use config <- result.try(form_config.create_wc(
         connection: conn,
-        agreement_id:,
         form_type:,
       ))
       use _ <- result.try(create_grouped_detail(conn, config.id, detail))

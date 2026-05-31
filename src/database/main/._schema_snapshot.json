@@ -45,7 +45,6 @@
     "form_configs": {
       "columns": [
         {"name": "id", "type": "Id", "nullable": false, "has_default": false},
-        {"name": "agreement_id", "type": "Foreign(agreements,onDelete:Cascade)", "nullable": false, "has_default": false},
         {"name": "form_type", "type": "Enum(form_type:fixed,variable,mix,spot,winter_security)", "nullable": false, "has_default": false}
       ],
       "indexes": [

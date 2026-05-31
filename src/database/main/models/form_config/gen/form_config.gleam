@@ -38,16 +38,14 @@ pub fn form_type_from_string(value: String) -> Result(FormType, Nil) {
 }
 
 pub type FormConfig {
-  FormConfig(id: Int, agreement_id: Int, form_type: FormType)
+  FormConfig(id: Int, form_type: FormType)
 }
 
 fn row_decoder() -> decode.Decoder(FormConfig) {
   use id <- decode.field(0, decode.int)
-  use agreement_id <- decode.field(1, decode.int)
-  use form_type <- decode.field(2, decode.string)
+  use form_type <- decode.field(1, decode.string)
   decode.success(FormConfig(
     id,
-    agreement_id,
     result.unwrap(form_type_from_string(form_type), Fixed),
   ))
 }
@@ -56,7 +54,6 @@ pub fn encoder() -> fn(FormConfig) -> json.Json {
   fn(model: FormConfig) {
     json.object([
       #("id", json.int(model.id)),
-      #("agreement_id", json.int(model.agreement_id)),
       #("form_type", json.string(form_type_to_string(model.form_type))),
     ])
   }
@@ -64,38 +61,30 @@ pub fn encoder() -> fn(FormConfig) -> json.Json {
 
 pub fn decoder() -> decode.Decoder(FormConfig) {
   use id <- decode.field("id", decode.int)
-  use agreement_id <- decode.field("agreement_id", decode.int)
   use form_type <- decode.field("form_type", decode.string)
   decode.success(FormConfig(
     id,
-    agreement_id,
     result.unwrap(form_type_from_string(form_type), Fixed),
   ))
 }
 
 pub fn create(
   pool pool: db.DbPool,
-  agreement_id agreement_id: Int,
   form_type form_type: FormType,
 ) -> Result(FormConfig, db.DbError) {
   use connection <- db.get_connection(pool)
-  create_wc(
-    connection: connection,
-    agreement_id: agreement_id,
-    form_type: form_type,
-  )
+  create_wc(connection: connection, form_type: form_type)
 }
 
 pub fn create_wc(
   connection connection: db.Connection,
-  agreement_id agreement_id: Int,
   form_type form_type: FormType,
 ) -> Result(FormConfig, db.DbError) {
   case
     db.query_with(
       connection,
-      "INSERT INTO form_configs (agreement_id, form_type) VALUES ($1, $2) RETURNING *",
-      [db.int(agreement_id), db.string(form_type_to_string(form_type))],
+      "INSERT INTO form_configs (form_type) VALUES ($1) RETURNING *",
+      [db.string(form_type_to_string(form_type))],
       row_decoder(),
     )
   {
@@ -108,32 +97,19 @@ pub fn create_wc(
 
 pub fn create_or_fail(
   pool pool: db.DbPool,
-  agreement_id agreement_id: Int,
   form_type form_type: FormType,
   then then: fn(FormConfig) -> Response,
 ) -> Response {
   use connection <- db.get_connection(pool)
-  create_or_fail_wc(
-    connection: connection,
-    agreement_id: agreement_id,
-    form_type: form_type,
-    then: then,
-  )
+  create_or_fail_wc(connection: connection, form_type: form_type, then: then)
 }
 
 pub fn create_or_fail_wc(
   connection connection: db.Connection,
-  agreement_id agreement_id: Int,
   form_type form_type: FormType,
   then then: fn(FormConfig) -> Response,
 ) -> Response {
-  case
-    create_wc(
-      connection: connection,
-      agreement_id: agreement_id,
-      form_type: form_type,
-    )
-  {
+  case create_wc(connection: connection, form_type: form_type) {
     Ok(value) -> then(value)
     Error(db.NotFound) -> response.not_found()
     Error(db.ConnectionError(_)) -> response.empty(503)
