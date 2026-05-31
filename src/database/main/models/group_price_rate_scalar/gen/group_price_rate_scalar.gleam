@@ -8,13 +8,18 @@ import glimr/db/db
 import glimr/http/response.{type Response}
 
 pub type GroupPriceRateScalar {
-  GroupPriceRateScalar(group_price_rate_id: Int, rate: Float)
+  GroupPriceRateScalar(
+    group_price_rate_id: Int,
+    rate: Float,
+    valid_month: String,
+  )
 }
 
 fn row_decoder() -> decode.Decoder(GroupPriceRateScalar) {
   use group_price_rate_id <- decode.field(0, decode.int)
   use rate <- decode.field(1, decode.float)
-  decode.success(GroupPriceRateScalar(group_price_rate_id, rate))
+  use valid_month <- decode.field(2, decode.string)
+  decode.success(GroupPriceRateScalar(group_price_rate_id, rate, valid_month))
 }
 
 pub fn encoder() -> fn(GroupPriceRateScalar) -> json.Json {
@@ -22,6 +27,7 @@ pub fn encoder() -> fn(GroupPriceRateScalar) -> json.Json {
     json.object([
       #("group_price_rate_id", json.int(model.group_price_rate_id)),
       #("rate", json.float(model.rate)),
+      #("valid_month", json.string(model.valid_month)),
     ])
   }
 }
@@ -29,19 +35,22 @@ pub fn encoder() -> fn(GroupPriceRateScalar) -> json.Json {
 pub fn decoder() -> decode.Decoder(GroupPriceRateScalar) {
   use group_price_rate_id <- decode.field("group_price_rate_id", decode.int)
   use rate <- decode.field("rate", decode.float)
-  decode.success(GroupPriceRateScalar(group_price_rate_id, rate))
+  use valid_month <- decode.field("valid_month", decode.string)
+  decode.success(GroupPriceRateScalar(group_price_rate_id, rate, valid_month))
 }
 
 pub fn create(
   pool pool: db.DbPool,
   group_price_rate_id group_price_rate_id: Int,
   rate rate: Float,
+  valid_month valid_month: String,
 ) -> Result(Int, db.DbError) {
   use connection <- db.get_connection(pool)
   create_wc(
     connection: connection,
     group_price_rate_id: group_price_rate_id,
     rate: rate,
+    valid_month: valid_month,
   )
 }
 
@@ -49,11 +58,12 @@ pub fn create_wc(
   connection connection: db.Connection,
   group_price_rate_id group_price_rate_id: Int,
   rate rate: Float,
+  valid_month valid_month: String,
 ) -> Result(Int, db.DbError) {
   db.exec_with(
     connection,
-    "INSERT INTO group_price_rates_scalar (group_price_rate_id, rate) VALUES ($1, $2)",
-    [db.int(group_price_rate_id), db.float(rate)],
+    "INSERT INTO group_price_rates_scalar (group_price_rate_id, rate, valid_month) VALUES ($1, $2, $3)",
+    [db.int(group_price_rate_id), db.float(rate), db.string(valid_month)],
   )
 }
 
@@ -61,6 +71,7 @@ pub fn create_or_fail(
   pool pool: db.DbPool,
   group_price_rate_id group_price_rate_id: Int,
   rate rate: Float,
+  valid_month valid_month: String,
   then then: fn(Int) -> Response,
 ) -> Response {
   use connection <- db.get_connection(pool)
@@ -68,6 +79,7 @@ pub fn create_or_fail(
     connection: connection,
     group_price_rate_id: group_price_rate_id,
     rate: rate,
+    valid_month: valid_month,
     then: then,
   )
 }
@@ -76,6 +88,7 @@ pub fn create_or_fail_wc(
   connection connection: db.Connection,
   group_price_rate_id group_price_rate_id: Int,
   rate rate: Float,
+  valid_month valid_month: String,
   then then: fn(Int) -> Response,
 ) -> Response {
   case
@@ -83,6 +96,7 @@ pub fn create_or_fail_wc(
       connection: connection,
       group_price_rate_id: group_price_rate_id,
       rate: rate,
+      valid_month: valid_month,
     )
   {
     Ok(count) -> then(count)

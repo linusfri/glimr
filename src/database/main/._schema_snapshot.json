@@ -86,13 +86,13 @@
       "columns": [
         {"name": "id", "type": "Id", "nullable": false, "has_default": false},
         {"name": "form_price_id", "type": "Foreign(form_prices,onDelete:Cascade)", "nullable": false, "has_default": false},
-        {"name": "rate_type", "type": "Enum(rate_type:single,monthly,split)", "nullable": false, "has_default": false}
+        {"name": "rate_type", "type": "Enum(rate_type:scalar,split)", "nullable": false, "has_default": false}
       ],
       "indexes": [
 
       ]
     },
-    "form_price_rates_monthly": {
+    "form_price_rates_scalar": {
       "columns": [
         {"name": "form_price_rate_id", "type": "Foreign(form_price_rates,onDelete:Cascade)", "nullable": false, "has_default": false},
         {"name": "rate", "type": "Float", "nullable": false, "has_default": false},
@@ -102,20 +102,12 @@
 
       ]
     },
-    "form_price_rates_scalar": {
-      "columns": [
-        {"name": "form_price_rate_id", "type": "Foreign(form_price_rates,onDelete:Cascade)", "nullable": false, "has_default": false},
-        {"name": "rate", "type": "Float", "nullable": false, "has_default": false}
-      ],
-      "indexes": [
-
-      ]
-    },
     "form_price_rates_split": {
       "columns": [
         {"name": "form_price_rate_id", "type": "Foreign(form_price_rates,onDelete:Cascade)", "nullable": false, "has_default": false},
         {"name": "fixed_rate", "type": "Float", "nullable": false, "has_default": false},
-        {"name": "variable_rate", "type": "Float", "nullable": false, "has_default": false}
+        {"name": "variable_rate", "type": "Float", "nullable": false, "has_default": false},
+        {"name": "valid_month", "type": "Date", "nullable": false, "has_default": false}
       ],
       "indexes": [
 
@@ -137,13 +129,13 @@
       "columns": [
         {"name": "id", "type": "Id", "nullable": false, "has_default": false},
         {"name": "group_price_id", "type": "Foreign(group_prices,onDelete:Cascade)", "nullable": false, "has_default": false},
-        {"name": "rate_type", "type": "Enum(rate_type:single,monthly,split)", "nullable": false, "has_default": false}
+        {"name": "rate_type", "type": "Enum(rate_type:scalar,split)", "nullable": false, "has_default": false}
       ],
       "indexes": [
 
       ]
     },
-    "group_price_rates_monthly": {
+    "group_price_rates_scalar": {
       "columns": [
         {"name": "group_price_rate_id", "type": "Foreign(group_price_rates,onDelete:Cascade)", "nullable": false, "has_default": false},
         {"name": "rate", "type": "Float", "nullable": false, "has_default": false},
@@ -153,20 +145,12 @@
 
       ]
     },
-    "group_price_rates_scalar": {
-      "columns": [
-        {"name": "group_price_rate_id", "type": "Foreign(group_price_rates,onDelete:Cascade)", "nullable": false, "has_default": false},
-        {"name": "rate", "type": "Float", "nullable": false, "has_default": false}
-      ],
-      "indexes": [
-
-      ]
-    },
     "group_price_rates_split": {
       "columns": [
         {"name": "group_price_rate_id", "type": "Foreign(group_price_rates,onDelete:Cascade)", "nullable": false, "has_default": false},
         {"name": "fixed_rate", "type": "Float", "nullable": false, "has_default": false},
-        {"name": "variable_rate", "type": "Float", "nullable": false, "has_default": false}
+        {"name": "variable_rate", "type": "Float", "nullable": false, "has_default": false},
+        {"name": "valid_month", "type": "Date", "nullable": false, "has_default": false}
       ],
       "indexes": [
 

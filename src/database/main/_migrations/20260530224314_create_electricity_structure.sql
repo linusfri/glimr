@@ -114,7 +114,7 @@ CREATE TABLE submission_prices_variable (
   price_variable DOUBLE PRECISION NOT NULL
 );
 
-CREATE TYPE rate_type AS ENUM ('single', 'monthly', 'split');
+CREATE TYPE rate_type AS ENUM ('scalar', 'split');
 
 CREATE TABLE form_price_rates (
   id SERIAL PRIMARY KEY NOT NULL,
@@ -154,35 +154,27 @@ CREATE TABLE group_price_rates (
 CREATE TABLE form_price_rates_split (
   form_price_rate_id INTEGER REFERENCES form_price_rates(id) ON DELETE CASCADE NOT NULL,
   fixed_rate DOUBLE PRECISION NOT NULL,
-  variable_rate DOUBLE PRECISION NOT NULL
+  variable_rate DOUBLE PRECISION NOT NULL,
+  valid_month DATE NOT NULL
 );
 
 CREATE TABLE form_price_rates_scalar (
   form_price_rate_id INTEGER REFERENCES form_price_rates(id) ON DELETE CASCADE NOT NULL,
-  rate DOUBLE PRECISION NOT NULL
-);
-
-CREATE TABLE form_price_rates_monthly (
-  form_price_rate_id INTEGER REFERENCES form_price_rates(id) ON DELETE CASCADE NOT NULL,
-  rate DOUBLE PRECISION NOT NULL,
-  valid_month DATE NOT NULL
-);
-
-CREATE TABLE group_price_rates_monthly (
-  group_price_rate_id INTEGER REFERENCES group_price_rates(id) ON DELETE CASCADE NOT NULL,
   rate DOUBLE PRECISION NOT NULL,
   valid_month DATE NOT NULL
 );
 
 CREATE TABLE group_price_rates_scalar (
   group_price_rate_id INTEGER REFERENCES group_price_rates(id) ON DELETE CASCADE NOT NULL,
-  rate DOUBLE PRECISION NOT NULL
+  rate DOUBLE PRECISION NOT NULL,
+  valid_month DATE NOT NULL
 );
 
 CREATE TABLE group_price_rates_split (
   group_price_rate_id INTEGER REFERENCES group_price_rates(id) ON DELETE CASCADE NOT NULL,
   fixed_rate DOUBLE PRECISION NOT NULL,
-  variable_rate DOUBLE PRECISION NOT NULL
+  variable_rate DOUBLE PRECISION NOT NULL,
+  valid_month DATE NOT NULL
 );
 
 

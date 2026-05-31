@@ -8,5 +8,6 @@ pub fn definition() {
       |> schema.on_delete(schema.Cascade),
     schema.float("fixed_rate"),
     schema.float("variable_rate"),
+    schema.date("valid_month"),
   ])
 }

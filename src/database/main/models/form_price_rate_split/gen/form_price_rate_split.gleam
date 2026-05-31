@@ -12,6 +12,7 @@ pub type FormPriceRateSplit {
     form_price_rate_id: Int,
     fixed_rate: Float,
     variable_rate: Float,
+    valid_month: String,
   )
 }
 
@@ -19,10 +20,12 @@ fn row_decoder() -> decode.Decoder(FormPriceRateSplit) {
   use form_price_rate_id <- decode.field(0, decode.int)
   use fixed_rate <- decode.field(1, decode.float)
   use variable_rate <- decode.field(2, decode.float)
+  use valid_month <- decode.field(3, decode.string)
   decode.success(FormPriceRateSplit(
     form_price_rate_id,
     fixed_rate,
     variable_rate,
+    valid_month,
   ))
 }
 
@@ -32,6 +35,7 @@ pub fn encoder() -> fn(FormPriceRateSplit) -> json.Json {
       #("form_price_rate_id", json.int(model.form_price_rate_id)),
       #("fixed_rate", json.float(model.fixed_rate)),
       #("variable_rate", json.float(model.variable_rate)),
+      #("valid_month", json.string(model.valid_month)),
     ])
   }
 }
@@ -40,10 +44,12 @@ pub fn decoder() -> decode.Decoder(FormPriceRateSplit) {
   use form_price_rate_id <- decode.field("form_price_rate_id", decode.int)
   use fixed_rate <- decode.field("fixed_rate", decode.float)
   use variable_rate <- decode.field("variable_rate", decode.float)
+  use valid_month <- decode.field("valid_month", decode.string)
   decode.success(FormPriceRateSplit(
     form_price_rate_id,
     fixed_rate,
     variable_rate,
+    valid_month,
   ))
 }
 
@@ -52,6 +58,7 @@ pub fn create(
   form_price_rate_id form_price_rate_id: Int,
   fixed_rate fixed_rate: Float,
   variable_rate variable_rate: Float,
+  valid_month valid_month: String,
 ) -> Result(Int, db.DbError) {
   use connection <- db.get_connection(pool)
   create_wc(
@@ -59,6 +66,7 @@ pub fn create(
     form_price_rate_id: form_price_rate_id,
     fixed_rate: fixed_rate,
     variable_rate: variable_rate,
+    valid_month: valid_month,
   )
 }
 
@@ -67,11 +75,17 @@ pub fn create_wc(
   form_price_rate_id form_price_rate_id: Int,
   fixed_rate fixed_rate: Float,
   variable_rate variable_rate: Float,
+  valid_month valid_month: String,
 ) -> Result(Int, db.DbError) {
   db.exec_with(
     connection,
-    "INSERT INTO form_price_rates_split (form_price_rate_id, fixed_rate, variable_rate) VALUES ($1, $2, $3)",
-    [db.int(form_price_rate_id), db.float(fixed_rate), db.float(variable_rate)],
+    "INSERT INTO form_price_rates_split (form_price_rate_id, fixed_rate, variable_rate, valid_month) VALUES ($1, $2, $3, $4)",
+    [
+      db.int(form_price_rate_id),
+      db.float(fixed_rate),
+      db.float(variable_rate),
+      db.string(valid_month),
+    ],
   )
 }
 
@@ -80,6 +94,7 @@ pub fn create_or_fail(
   form_price_rate_id form_price_rate_id: Int,
   fixed_rate fixed_rate: Float,
   variable_rate variable_rate: Float,
+  valid_month valid_month: String,
   then then: fn(Int) -> Response,
 ) -> Response {
   use connection <- db.get_connection(pool)
@@ -88,6 +103,7 @@ pub fn create_or_fail(
     form_price_rate_id: form_price_rate_id,
     fixed_rate: fixed_rate,
     variable_rate: variable_rate,
+    valid_month: valid_month,
     then: then,
   )
 }
@@ -97,6 +113,7 @@ pub fn create_or_fail_wc(
   form_price_rate_id form_price_rate_id: Int,
   fixed_rate fixed_rate: Float,
   variable_rate variable_rate: Float,
+  valid_month valid_month: String,
   then then: fn(Int) -> Response,
 ) -> Response {
   case
@@ -105,6 +122,7 @@ pub fn create_or_fail_wc(
       form_price_rate_id: form_price_rate_id,
       fixed_rate: fixed_rate,
       variable_rate: variable_rate,
+      valid_month: valid_month,
     )
   {
     Ok(count) -> then(count)

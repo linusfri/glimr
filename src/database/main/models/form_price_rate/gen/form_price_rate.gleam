@@ -9,23 +9,20 @@ import glimr/db/db
 import glimr/http/response.{type Response}
 
 pub type RateType {
-  Single
-  Monthly
+  Scalar
   Split
 }
 
 pub fn rate_type_to_string(value: RateType) -> String {
   case value {
-    Single -> "single"
-    Monthly -> "monthly"
+    Scalar -> "scalar"
     Split -> "split"
   }
 }
 
 pub fn rate_type_from_string(value: String) -> Result(RateType, Nil) {
   case value {
-    "single" -> Ok(Single)
-    "monthly" -> Ok(Monthly)
+    "scalar" -> Ok(Scalar)
     "split" -> Ok(Split)
     _ -> Error(Nil)
   }
@@ -42,7 +39,7 @@ fn row_decoder() -> decode.Decoder(FormPriceRate) {
   decode.success(FormPriceRate(
     id,
     form_price_id,
-    result.unwrap(rate_type_from_string(rate_type), Single),
+    result.unwrap(rate_type_from_string(rate_type), Scalar),
   ))
 }
 
@@ -63,7 +60,7 @@ pub fn decoder() -> decode.Decoder(FormPriceRate) {
   decode.success(FormPriceRate(
     id,
     form_price_id,
-    result.unwrap(rate_type_from_string(rate_type), Single),
+    result.unwrap(rate_type_from_string(rate_type), Scalar),
   ))
 }
 

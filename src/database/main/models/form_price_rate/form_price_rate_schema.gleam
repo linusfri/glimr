@@ -7,6 +7,6 @@ pub fn definition() {
     schema.id(),
     schema.foreign("form_price_id", "form_prices")
       |> schema.on_delete(schema.Cascade),
-    schema.enum("rate_type", ["single", "monthly", "split"]),
+    schema.enum("rate_type", ["scalar", "split"]),
   ])
 }

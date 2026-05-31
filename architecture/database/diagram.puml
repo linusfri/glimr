@@ -132,23 +132,17 @@ entity form_price_rates {
   * id : int
   --
   * form_price_id : int <<FK>>
-  * rate_type : enum  /' single|monthly|split '/
+  * rate_type : enum  /' scalar|split '/
 }
 
 entity group_price_rates {
   * id : int
   --
   * group_price_id : int <<FK>>
-  * rate_type : enum  /' single|monthly|split '/
+  * rate_type : enum  /' scalar|split '/
 }
 
 entity form_price_rates_scalar {
-  * form_price_rate_id : int <<FK>>
-  --
-  * rate : float
-}
-
-entity form_price_rates_monthly {
   * form_price_rate_id : int <<FK>>
   --
   * rate : float
@@ -160,15 +154,10 @@ entity form_price_rates_split {
   --
   * fixed_rate : float
   * variable_rate : float
+  * valid_month : date
 }
 
 entity group_price_rates_scalar {
-  * group_price_rate_id : int <<FK>>
-  --
-  * rate : float
-}
-
-entity group_price_rates_monthly {
   * group_price_rate_id : int <<FK>>
   --
   * rate : float
@@ -180,16 +169,15 @@ entity group_price_rates_split {
   --
   * fixed_rate : float
   * variable_rate : float
+  * valid_month : date
 }
 
 form_prices ||--|| form_price_rates
 group_prices ||--|| group_price_rates
-form_price_rates ||--o| form_price_rates_scalar
-form_price_rates ||--o| form_price_rates_monthly
-form_price_rates ||--o| form_price_rates_split
-group_price_rates ||--o| group_price_rates_scalar
-group_price_rates ||--o| group_price_rates_monthly
-group_price_rates ||--o| group_price_rates_split
+form_price_rates ||--o{ form_price_rates_scalar
+form_price_rates ||--o{ form_price_rates_split
+group_price_rates ||--o{ group_price_rates_scalar
+group_price_rates ||--o{ group_price_rates_split
 
 ' ─────────────────────────────────────────────
 ' AGREEMENT SUBMISSIONS

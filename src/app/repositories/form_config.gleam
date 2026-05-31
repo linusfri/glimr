@@ -4,14 +4,12 @@ import database/main/models/form_config_spot/gen/form_config_spot
 import database/main/models/form_config_variable/gen/form_config_variable
 import database/main/models/form_price/gen/form_price
 import database/main/models/form_price_rate/gen/form_price_rate
-import database/main/models/form_price_rate_monthly/gen/form_price_rate_monthly
 import database/main/models/form_price_rate_scalar/gen/form_price_rate_scalar
 import database/main/models/form_price_rate_split/gen/form_price_rate_split
 import database/main/models/group/gen/group as group_model
 import database/main/models/group_mix/gen/group_mix
 import database/main/models/group_price/gen/group_price
 import database/main/models/group_price_rate/gen/group_price_rate
-import database/main/models/group_price_rate_monthly/gen/group_price_rate_monthly
 import database/main/models/group_price_rate_scalar/gen/group_price_rate_scalar
 import database/main/models/group_price_rate_split/gen/group_price_rate_split
 import gleam/list
@@ -23,14 +21,9 @@ import glimr/db/db
 // ---------------------------------------------------------------------------
 
 // Shared rate detail — used by both form prices and group prices
-pub type NewMonthlyRate {
-  NewMonthlyRate(valid_month: String, rate: Float)
-}
-
 pub type NewPriceRateDetail {
-  NewScalarRate(rate: Float)
-  NewMonthlyRates(months: List(NewMonthlyRate))
-  NewSplitRate(fixed_rate: Float, variable_rate: Float)
+  NewScalarRate(rate: Float, valid_month: String)
+  NewSplitRate(fixed_rate: Float, variable_rate: Float, valid_month: String)
 }
 
 // Form prices (variable / spot only)
@@ -212,8 +205,7 @@ fn create_form_price(
   ))
 
   let rate_type = case price.rate {
-    NewScalarRate(..) -> form_price_rate.Single
-    NewMonthlyRates(..) -> form_price_rate.Monthly
+    NewScalarRate(..) -> form_price_rate.Scalar
     NewSplitRate(..) -> form_price_rate.Split
   }
 
@@ -232,30 +224,21 @@ fn create_form_rate_detail(
   detail: NewPriceRateDetail,
 ) -> Result(Int, db.DbError) {
   case detail {
-    NewScalarRate(rate:) ->
+    NewScalarRate(rate:, valid_month:) ->
       form_price_rate_scalar.create_wc(
         connection: conn,
         form_price_rate_id:,
         rate:,
+        valid_month:,
       )
 
-    NewMonthlyRates(months:) ->
-      list.try_map(months, fn(month) {
-        form_price_rate_monthly.create_wc(
-          connection: conn,
-          form_price_rate_id:,
-          rate: month.rate,
-          valid_month: month.valid_month,
-        )
-      })
-      |> result.map(fn(_) { 0 })
-
-    NewSplitRate(fixed_rate:, variable_rate:) ->
+    NewSplitRate(fixed_rate:, variable_rate:, valid_month:) ->
       form_price_rate_split.create_wc(
         connection: conn,
         form_price_rate_id:,
         fixed_rate:,
         variable_rate:,
+        valid_month:,
       )
   }
 }
@@ -321,8 +304,7 @@ fn create_group_price(
   ))
 
   let rate_type = case price.rate {
-    NewScalarRate(..) -> group_price_rate.Single
-    NewMonthlyRates(..) -> group_price_rate.Monthly
+    NewScalarRate(..) -> group_price_rate.Scalar
     NewSplitRate(..) -> group_price_rate.Split
   }
 
@@ -341,30 +323,21 @@ fn create_group_rate_detail(
   detail: NewPriceRateDetail,
 ) -> Result(Nil, db.DbError) {
   let result = case detail {
-    NewScalarRate(rate:) ->
+    NewScalarRate(rate:, valid_month:) ->
       group_price_rate_scalar.create_wc(
         connection: conn,
         group_price_rate_id:,
         rate:,
+        valid_month:,
       )
 
-    NewMonthlyRates(months:) ->
-      list.try_map(months, fn(month) {
-        group_price_rate_monthly.create_wc(
-          connection: conn,
-          group_price_rate_id:,
-          rate: month.rate,
-          valid_month: month.valid_month,
-        )
-      })
-      |> result.map(list.length)
-
-    NewSplitRate(fixed_rate:, variable_rate:) ->
+    NewSplitRate(fixed_rate:, variable_rate:, valid_month:) ->
       group_price_rate_split.create_wc(
         connection: conn,
         group_price_rate_id:,
         fixed_rate:,
         variable_rate:,
+        valid_month:,
       )
   }
 

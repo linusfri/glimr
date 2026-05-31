@@ -7,5 +7,6 @@ pub fn definition() {
     schema.foreign("group_price_rate_id", "group_price_rates")
       |> schema.on_delete(schema.Cascade),
     schema.float("rate"),
+    schema.date("valid_month"),
   ])
 }
