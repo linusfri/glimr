@@ -39,6 +39,8 @@ CREATE TABLE form_configs (
   form_type form_type NOT NULL
 );
 
+CREATE UNIQUE INDEX idx_form_configs_form_type ON form_configs (form_type);
+
 CREATE TYPE group_type AS ENUM ('fixed', 'mix');
 
 CREATE TABLE groups (

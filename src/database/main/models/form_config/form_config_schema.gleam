@@ -13,4 +13,5 @@ pub fn definition() {
       "winter_security",
     ]),
   ])
+  |> schema.indexes([schema.unique(["form_type"])])
 }

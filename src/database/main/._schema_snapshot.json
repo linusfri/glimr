@@ -48,7 +48,7 @@
         {"name": "form_type", "type": "Enum(form_type:fixed,variable,mix,spot,winter_security)", "nullable": false, "has_default": false}
       ],
       "indexes": [
-
+        {"columns": ["form_type"], "unique": true, "name": null}
       ]
     },
     "form_configs_mix": {
