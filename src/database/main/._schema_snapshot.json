@@ -96,7 +96,7 @@
       "columns": [
         {"name": "form_price_rate_id", "type": "Foreign(form_price_rates,onDelete:Cascade)", "nullable": false, "has_default": false},
         {"name": "rate", "type": "Float", "nullable": false, "has_default": false},
-        {"name": "valid_month", "type": "String", "nullable": false, "has_default": false}
+        {"name": "valid_month", "type": "Date", "nullable": false, "has_default": false}
       ],
       "indexes": [
 
@@ -147,7 +147,7 @@
       "columns": [
         {"name": "group_price_rate_id", "type": "Foreign(group_price_rates,onDelete:Cascade)", "nullable": false, "has_default": false},
         {"name": "rate", "type": "Float", "nullable": false, "has_default": false},
-        {"name": "valid_month", "type": "String", "nullable": false, "has_default": false}
+        {"name": "valid_month", "type": "Date", "nullable": false, "has_default": false}
       ],
       "indexes": [
 

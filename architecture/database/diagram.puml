@@ -152,7 +152,7 @@ entity form_price_rates_monthly {
   * form_price_rate_id : int <<FK>>
   --
   * rate : float
-  * valid_month : varchar
+  * valid_month : date
 }
 
 entity form_price_rates_split {
@@ -172,7 +172,7 @@ entity group_price_rates_monthly {
   * group_price_rate_id : int <<FK>>
   --
   * rate : float
-  * valid_month : varchar
+  * valid_month : date
 }
 
 entity group_price_rates_split {

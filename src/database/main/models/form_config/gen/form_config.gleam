@@ -6,6 +6,7 @@ import gleam/dynamic/decode
 import gleam/json
 import gleam/result
 import glimr/db/db
+import glimr/http/response.{type Response}
 
 pub type FormType {
   Fixed
@@ -70,4 +71,73 @@ pub fn decoder() -> decode.Decoder(FormConfig) {
     agreement_id,
     result.unwrap(form_type_from_string(form_type), Fixed),
   ))
+}
+
+pub fn create(
+  pool pool: db.DbPool,
+  agreement_id agreement_id: Int,
+  form_type form_type: FormType,
+) -> Result(FormConfig, db.DbError) {
+  use connection <- db.get_connection(pool)
+  create_wc(
+    connection: connection,
+    agreement_id: agreement_id,
+    form_type: form_type,
+  )
+}
+
+pub fn create_wc(
+  connection connection: db.Connection,
+  agreement_id agreement_id: Int,
+  form_type form_type: FormType,
+) -> Result(FormConfig, db.DbError) {
+  case
+    db.query_with(
+      connection,
+      "INSERT INTO form_configs (agreement_id, form_type) VALUES ($1, $2) RETURNING *",
+      [db.int(agreement_id), db.string(form_type_to_string(form_type))],
+      row_decoder(),
+    )
+  {
+    Ok(db.QueryResult(_, [row])) -> Ok(row)
+    Ok(db.QueryResult(_, [])) -> Error(db.NotFound)
+    Ok(_) -> Error(db.QueryError("Expected single row"))
+    Error(e) -> Error(e)
+  }
+}
+
+pub fn create_or_fail(
+  pool pool: db.DbPool,
+  agreement_id agreement_id: Int,
+  form_type form_type: FormType,
+  then then: fn(FormConfig) -> Response,
+) -> Response {
+  use connection <- db.get_connection(pool)
+  create_or_fail_wc(
+    connection: connection,
+    agreement_id: agreement_id,
+    form_type: form_type,
+    then: then,
+  )
+}
+
+pub fn create_or_fail_wc(
+  connection connection: db.Connection,
+  agreement_id agreement_id: Int,
+  form_type form_type: FormType,
+  then then: fn(FormConfig) -> Response,
+) -> Response {
+  case
+    create_wc(
+      connection: connection,
+      agreement_id: agreement_id,
+      form_type: form_type,
+    )
+  {
+    Ok(value) -> then(value)
+    Error(db.NotFound) -> response.not_found()
+    Error(db.ConnectionError(_)) -> response.empty(503)
+    Error(db.TimeoutError) -> response.empty(503)
+    Error(_) -> response.internal_server_error()
+  }
 }

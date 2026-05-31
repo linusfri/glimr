@@ -165,13 +165,13 @@ CREATE TABLE form_price_rates_scalar (
 CREATE TABLE form_price_rates_monthly (
   form_price_rate_id INTEGER REFERENCES form_price_rates(id) ON DELETE CASCADE NOT NULL,
   rate DOUBLE PRECISION NOT NULL,
-  valid_month VARCHAR(255) NOT NULL
+  valid_month DATE NOT NULL
 );
 
 CREATE TABLE group_price_rates_monthly (
   group_price_rate_id INTEGER REFERENCES group_price_rates(id) ON DELETE CASCADE NOT NULL,
   rate DOUBLE PRECISION NOT NULL,
-  valid_month VARCHAR(255) NOT NULL
+  valid_month DATE NOT NULL
 );
 
 CREATE TABLE group_price_rates_scalar (

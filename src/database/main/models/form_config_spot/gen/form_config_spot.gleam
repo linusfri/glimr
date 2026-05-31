@@ -5,6 +5,7 @@
 import gleam/dynamic/decode
 import gleam/json
 import glimr/db/db
+import glimr/http/response.{type Response}
 
 pub type FormConfigSpot {
   FormConfigSpot(
@@ -50,4 +51,83 @@ pub fn decoder() -> decode.Decoder(FormConfigSpot) {
     variable_costs,
     surcharge,
   ))
+}
+
+pub fn create(
+  pool pool: db.DbPool,
+  form_config_id form_config_id: Int,
+  yearly_fee yearly_fee: Float,
+  variable_costs variable_costs: Float,
+  surcharge surcharge: Float,
+) -> Result(Int, db.DbError) {
+  use connection <- db.get_connection(pool)
+  create_wc(
+    connection: connection,
+    form_config_id: form_config_id,
+    yearly_fee: yearly_fee,
+    variable_costs: variable_costs,
+    surcharge: surcharge,
+  )
+}
+
+pub fn create_wc(
+  connection connection: db.Connection,
+  form_config_id form_config_id: Int,
+  yearly_fee yearly_fee: Float,
+  variable_costs variable_costs: Float,
+  surcharge surcharge: Float,
+) -> Result(Int, db.DbError) {
+  db.exec_with(
+    connection,
+    "INSERT INTO form_configs_spot (form_config_id, yearly_fee, variable_costs, surcharge) VALUES ($1, $2, $3, $4)",
+    [
+      db.int(form_config_id),
+      db.float(yearly_fee),
+      db.float(variable_costs),
+      db.float(surcharge),
+    ],
+  )
+}
+
+pub fn create_or_fail(
+  pool pool: db.DbPool,
+  form_config_id form_config_id: Int,
+  yearly_fee yearly_fee: Float,
+  variable_costs variable_costs: Float,
+  surcharge surcharge: Float,
+  then then: fn(Int) -> Response,
+) -> Response {
+  use connection <- db.get_connection(pool)
+  create_or_fail_wc(
+    connection: connection,
+    form_config_id: form_config_id,
+    yearly_fee: yearly_fee,
+    variable_costs: variable_costs,
+    surcharge: surcharge,
+    then: then,
+  )
+}
+
+pub fn create_or_fail_wc(
+  connection connection: db.Connection,
+  form_config_id form_config_id: Int,
+  yearly_fee yearly_fee: Float,
+  variable_costs variable_costs: Float,
+  surcharge surcharge: Float,
+  then then: fn(Int) -> Response,
+) -> Response {
+  case
+    create_wc(
+      connection: connection,
+      form_config_id: form_config_id,
+      yearly_fee: yearly_fee,
+      variable_costs: variable_costs,
+      surcharge: surcharge,
+    )
+  {
+    Ok(count) -> then(count)
+    Error(db.ConnectionError(_)) -> response.empty(503)
+    Error(db.TimeoutError) -> response.empty(503)
+    Error(_) -> response.internal_server_error()
+  }
 }
