@@ -251,7 +251,7 @@ entity submission_prices_spot {
   * submission_price_id : int <<FK>>
   --
   * hourly_price : float
-  * price_variable : float
+  * surcharge : float
 }
 
 agreement_submissions ||--|| submission_prices

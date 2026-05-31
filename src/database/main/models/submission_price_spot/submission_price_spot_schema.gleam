@@ -7,6 +7,6 @@ pub fn definition() {
     schema.foreign("submission_price_id", "submission_prices")
       |> schema.on_delete(schema.Cascade),
     schema.float("hourly_price"),
-    schema.float("price_variable"),
+    schema.float("surcharge"),
   ])
 }

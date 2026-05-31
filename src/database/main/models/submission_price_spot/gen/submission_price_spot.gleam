@@ -10,18 +10,18 @@ pub type SubmissionPriceSpot {
   SubmissionPriceSpot(
     submission_price_id: Int,
     hourly_price: Float,
-    price_variable: Float,
+    surcharge: Float,
   )
 }
 
 fn row_decoder() -> decode.Decoder(SubmissionPriceSpot) {
   use submission_price_id <- decode.field(0, decode.int)
   use hourly_price <- decode.field(1, decode.float)
-  use price_variable <- decode.field(2, decode.float)
+  use surcharge <- decode.field(2, decode.float)
   decode.success(SubmissionPriceSpot(
     submission_price_id,
     hourly_price,
-    price_variable,
+    surcharge,
   ))
 }
 
@@ -30,7 +30,7 @@ pub fn encoder() -> fn(SubmissionPriceSpot) -> json.Json {
     json.object([
       #("submission_price_id", json.int(model.submission_price_id)),
       #("hourly_price", json.float(model.hourly_price)),
-      #("price_variable", json.float(model.price_variable)),
+      #("surcharge", json.float(model.surcharge)),
     ])
   }
 }
@@ -38,10 +38,10 @@ pub fn encoder() -> fn(SubmissionPriceSpot) -> json.Json {
 pub fn decoder() -> decode.Decoder(SubmissionPriceSpot) {
   use submission_price_id <- decode.field("submission_price_id", decode.int)
   use hourly_price <- decode.field("hourly_price", decode.float)
-  use price_variable <- decode.field("price_variable", decode.float)
+  use surcharge <- decode.field("surcharge", decode.float)
   decode.success(SubmissionPriceSpot(
     submission_price_id,
     hourly_price,
-    price_variable,
+    surcharge,
   ))
 }

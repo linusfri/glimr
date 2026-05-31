@@ -247,7 +247,7 @@
       "columns": [
         {"name": "submission_price_id", "type": "Foreign(submission_prices,onDelete:Cascade)", "nullable": false, "has_default": false},
         {"name": "hourly_price", "type": "Float", "nullable": false, "has_default": false},
-        {"name": "price_variable", "type": "Float", "nullable": false, "has_default": false}
+        {"name": "surcharge", "type": "Float", "nullable": false, "has_default": false}
       ],
       "indexes": [
 

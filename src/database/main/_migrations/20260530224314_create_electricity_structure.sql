@@ -131,7 +131,7 @@ CREATE TABLE submission_prices_mix (
 CREATE TABLE submission_prices_spot (
   submission_price_id INTEGER REFERENCES submission_prices(id) ON DELETE CASCADE NOT NULL,
   hourly_price DOUBLE PRECISION NOT NULL,
-  price_variable DOUBLE PRECISION NOT NULL
+  surcharge DOUBLE PRECISION NOT NULL
 );
 
 CREATE TABLE submission_prices_fixed (
