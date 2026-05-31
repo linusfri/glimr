@@ -6,6 +6,7 @@ import gleam/dynamic/decode
 import gleam/json
 import glimr/db/db
 import glimr/db/decode as glimr_decode
+import glimr/http/response.{type Response}
 
 pub type GroupPrice {
   GroupPrice(
@@ -57,4 +58,92 @@ pub fn decoder() -> decode.Decoder(GroupPrice) {
     signable_until,
     is_best_value,
   ))
+}
+
+pub fn create(
+  pool pool: db.DbPool,
+  group_id group_id: Int,
+  signable_from signable_from: String,
+  signable_until signable_until: String,
+  is_best_value is_best_value: Bool,
+) -> Result(GroupPrice, db.DbError) {
+  use connection <- db.get_connection(pool)
+  create_wc(
+    connection: connection,
+    group_id: group_id,
+    signable_from: signable_from,
+    signable_until: signable_until,
+    is_best_value: is_best_value,
+  )
+}
+
+pub fn create_wc(
+  connection connection: db.Connection,
+  group_id group_id: Int,
+  signable_from signable_from: String,
+  signable_until signable_until: String,
+  is_best_value is_best_value: Bool,
+) -> Result(GroupPrice, db.DbError) {
+  case
+    db.query_with(
+      connection,
+      "INSERT INTO group_prices (group_id, signable_from, signable_until, is_best_value) VALUES ($1, $2, $3, $4) RETURNING *",
+      [
+        db.int(group_id),
+        db.string(signable_from),
+        db.string(signable_until),
+        db.bool(is_best_value),
+      ],
+      row_decoder(),
+    )
+  {
+    Ok(db.QueryResult(_, [row])) -> Ok(row)
+    Ok(db.QueryResult(_, [])) -> Error(db.NotFound)
+    Ok(_) -> Error(db.QueryError("Expected single row"))
+    Error(e) -> Error(e)
+  }
+}
+
+pub fn create_or_fail(
+  pool pool: db.DbPool,
+  group_id group_id: Int,
+  signable_from signable_from: String,
+  signable_until signable_until: String,
+  is_best_value is_best_value: Bool,
+  then then: fn(GroupPrice) -> Response,
+) -> Response {
+  use connection <- db.get_connection(pool)
+  create_or_fail_wc(
+    connection: connection,
+    group_id: group_id,
+    signable_from: signable_from,
+    signable_until: signable_until,
+    is_best_value: is_best_value,
+    then: then,
+  )
+}
+
+pub fn create_or_fail_wc(
+  connection connection: db.Connection,
+  group_id group_id: Int,
+  signable_from signable_from: String,
+  signable_until signable_until: String,
+  is_best_value is_best_value: Bool,
+  then then: fn(GroupPrice) -> Response,
+) -> Response {
+  case
+    create_wc(
+      connection: connection,
+      group_id: group_id,
+      signable_from: signable_from,
+      signable_until: signable_until,
+      is_best_value: is_best_value,
+    )
+  {
+    Ok(value) -> then(value)
+    Error(db.NotFound) -> response.not_found()
+    Error(db.ConnectionError(_)) -> response.empty(503)
+    Error(db.TimeoutError) -> response.empty(503)
+    Error(_) -> response.internal_server_error()
+  }
 }

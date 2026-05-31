@@ -5,6 +5,7 @@
 import gleam/dynamic/decode
 import gleam/json
 import glimr/db/db
+import glimr/http/response.{type Response}
 
 pub type GroupPriceRateMonthly {
   GroupPriceRateMonthly(
@@ -36,4 +37,71 @@ pub fn decoder() -> decode.Decoder(GroupPriceRateMonthly) {
   use rate <- decode.field("rate", decode.float)
   use valid_month <- decode.field("valid_month", decode.string)
   decode.success(GroupPriceRateMonthly(group_price_rate_id, rate, valid_month))
+}
+
+pub fn create(
+  pool pool: db.DbPool,
+  group_price_rate_id group_price_rate_id: Int,
+  rate rate: Float,
+  valid_month valid_month: String,
+) -> Result(Int, db.DbError) {
+  use connection <- db.get_connection(pool)
+  create_wc(
+    connection: connection,
+    group_price_rate_id: group_price_rate_id,
+    rate: rate,
+    valid_month: valid_month,
+  )
+}
+
+pub fn create_wc(
+  connection connection: db.Connection,
+  group_price_rate_id group_price_rate_id: Int,
+  rate rate: Float,
+  valid_month valid_month: String,
+) -> Result(Int, db.DbError) {
+  db.exec_with(
+    connection,
+    "INSERT INTO group_price_rates_monthly (group_price_rate_id, rate, valid_month) VALUES ($1, $2, $3)",
+    [db.int(group_price_rate_id), db.float(rate), db.string(valid_month)],
+  )
+}
+
+pub fn create_or_fail(
+  pool pool: db.DbPool,
+  group_price_rate_id group_price_rate_id: Int,
+  rate rate: Float,
+  valid_month valid_month: String,
+  then then: fn(Int) -> Response,
+) -> Response {
+  use connection <- db.get_connection(pool)
+  create_or_fail_wc(
+    connection: connection,
+    group_price_rate_id: group_price_rate_id,
+    rate: rate,
+    valid_month: valid_month,
+    then: then,
+  )
+}
+
+pub fn create_or_fail_wc(
+  connection connection: db.Connection,
+  group_price_rate_id group_price_rate_id: Int,
+  rate rate: Float,
+  valid_month valid_month: String,
+  then then: fn(Int) -> Response,
+) -> Response {
+  case
+    create_wc(
+      connection: connection,
+      group_price_rate_id: group_price_rate_id,
+      rate: rate,
+      valid_month: valid_month,
+    )
+  {
+    Ok(count) -> then(count)
+    Error(db.ConnectionError(_)) -> response.empty(503)
+    Error(db.TimeoutError) -> response.empty(503)
+    Error(_) -> response.internal_server_error()
+  }
 }

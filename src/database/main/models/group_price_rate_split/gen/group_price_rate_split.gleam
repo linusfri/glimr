@@ -5,6 +5,7 @@
 import gleam/dynamic/decode
 import gleam/json
 import glimr/db/db
+import glimr/http/response.{type Response}
 
 pub type GroupPriceRateSplit {
   GroupPriceRateSplit(
@@ -44,4 +45,71 @@ pub fn decoder() -> decode.Decoder(GroupPriceRateSplit) {
     fixed_rate,
     variable_rate,
   ))
+}
+
+pub fn create(
+  pool pool: db.DbPool,
+  group_price_rate_id group_price_rate_id: Int,
+  fixed_rate fixed_rate: Float,
+  variable_rate variable_rate: Float,
+) -> Result(Int, db.DbError) {
+  use connection <- db.get_connection(pool)
+  create_wc(
+    connection: connection,
+    group_price_rate_id: group_price_rate_id,
+    fixed_rate: fixed_rate,
+    variable_rate: variable_rate,
+  )
+}
+
+pub fn create_wc(
+  connection connection: db.Connection,
+  group_price_rate_id group_price_rate_id: Int,
+  fixed_rate fixed_rate: Float,
+  variable_rate variable_rate: Float,
+) -> Result(Int, db.DbError) {
+  db.exec_with(
+    connection,
+    "INSERT INTO group_price_rates_split (group_price_rate_id, fixed_rate, variable_rate) VALUES ($1, $2, $3)",
+    [db.int(group_price_rate_id), db.float(fixed_rate), db.float(variable_rate)],
+  )
+}
+
+pub fn create_or_fail(
+  pool pool: db.DbPool,
+  group_price_rate_id group_price_rate_id: Int,
+  fixed_rate fixed_rate: Float,
+  variable_rate variable_rate: Float,
+  then then: fn(Int) -> Response,
+) -> Response {
+  use connection <- db.get_connection(pool)
+  create_or_fail_wc(
+    connection: connection,
+    group_price_rate_id: group_price_rate_id,
+    fixed_rate: fixed_rate,
+    variable_rate: variable_rate,
+    then: then,
+  )
+}
+
+pub fn create_or_fail_wc(
+  connection connection: db.Connection,
+  group_price_rate_id group_price_rate_id: Int,
+  fixed_rate fixed_rate: Float,
+  variable_rate variable_rate: Float,
+  then then: fn(Int) -> Response,
+) -> Response {
+  case
+    create_wc(
+      connection: connection,
+      group_price_rate_id: group_price_rate_id,
+      fixed_rate: fixed_rate,
+      variable_rate: variable_rate,
+    )
+  {
+    Ok(count) -> then(count)
+    Error(db.ConnectionError(_)) -> response.empty(503)
+    Error(db.TimeoutError) -> response.empty(503)
+    Error(_) -> response.internal_server_error()
+  }
 }

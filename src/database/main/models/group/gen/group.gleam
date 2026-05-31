@@ -6,6 +6,7 @@ import gleam/dynamic/decode
 import gleam/json
 import gleam/result
 import glimr/db/db
+import glimr/http/response.{type Response}
 
 pub type GroupType {
   Fixed
@@ -98,4 +99,116 @@ pub fn decoder() -> decode.Decoder(Group) {
     visible_from,
     visible_until,
   ))
+}
+
+pub fn create(
+  pool pool: db.DbPool,
+  form_config_id form_config_id: Int,
+  group_type group_type: GroupType,
+  title title: String,
+  contract_period_months contract_period_months: Int,
+  yearly_fee yearly_fee: Float,
+  visible_from visible_from: String,
+  visible_until visible_until: String,
+) -> Result(Group, db.DbError) {
+  use connection <- db.get_connection(pool)
+  create_wc(
+    connection: connection,
+    form_config_id: form_config_id,
+    group_type: group_type,
+    title: title,
+    contract_period_months: contract_period_months,
+    yearly_fee: yearly_fee,
+    visible_from: visible_from,
+    visible_until: visible_until,
+  )
+}
+
+pub fn create_wc(
+  connection connection: db.Connection,
+  form_config_id form_config_id: Int,
+  group_type group_type: GroupType,
+  title title: String,
+  contract_period_months contract_period_months: Int,
+  yearly_fee yearly_fee: Float,
+  visible_from visible_from: String,
+  visible_until visible_until: String,
+) -> Result(Group, db.DbError) {
+  case
+    db.query_with(
+      connection,
+      "INSERT INTO groups (form_config_id, group_type, title, contract_period_months, yearly_fee, visible_from, visible_until) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *",
+      [
+        db.int(form_config_id),
+        db.string(group_type_to_string(group_type)),
+        db.string(title),
+        db.int(contract_period_months),
+        db.float(yearly_fee),
+        db.string(visible_from),
+        db.string(visible_until),
+      ],
+      row_decoder(),
+    )
+  {
+    Ok(db.QueryResult(_, [row])) -> Ok(row)
+    Ok(db.QueryResult(_, [])) -> Error(db.NotFound)
+    Ok(_) -> Error(db.QueryError("Expected single row"))
+    Error(e) -> Error(e)
+  }
+}
+
+pub fn create_or_fail(
+  pool pool: db.DbPool,
+  form_config_id form_config_id: Int,
+  group_type group_type: GroupType,
+  title title: String,
+  contract_period_months contract_period_months: Int,
+  yearly_fee yearly_fee: Float,
+  visible_from visible_from: String,
+  visible_until visible_until: String,
+  then then: fn(Group) -> Response,
+) -> Response {
+  use connection <- db.get_connection(pool)
+  create_or_fail_wc(
+    connection: connection,
+    form_config_id: form_config_id,
+    group_type: group_type,
+    title: title,
+    contract_period_months: contract_period_months,
+    yearly_fee: yearly_fee,
+    visible_from: visible_from,
+    visible_until: visible_until,
+    then: then,
+  )
+}
+
+pub fn create_or_fail_wc(
+  connection connection: db.Connection,
+  form_config_id form_config_id: Int,
+  group_type group_type: GroupType,
+  title title: String,
+  contract_period_months contract_period_months: Int,
+  yearly_fee yearly_fee: Float,
+  visible_from visible_from: String,
+  visible_until visible_until: String,
+  then then: fn(Group) -> Response,
+) -> Response {
+  case
+    create_wc(
+      connection: connection,
+      form_config_id: form_config_id,
+      group_type: group_type,
+      title: title,
+      contract_period_months: contract_period_months,
+      yearly_fee: yearly_fee,
+      visible_from: visible_from,
+      visible_until: visible_until,
+    )
+  {
+    Ok(value) -> then(value)
+    Error(db.NotFound) -> response.not_found()
+    Error(db.ConnectionError(_)) -> response.empty(503)
+    Error(db.TimeoutError) -> response.empty(503)
+    Error(_) -> response.internal_server_error()
+  }
 }

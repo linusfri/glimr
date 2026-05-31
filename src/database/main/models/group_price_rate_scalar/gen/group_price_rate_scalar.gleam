@@ -5,6 +5,7 @@
 import gleam/dynamic/decode
 import gleam/json
 import glimr/db/db
+import glimr/http/response.{type Response}
 
 pub type GroupPriceRateScalar {
   GroupPriceRateScalar(group_price_rate_id: Int, rate: Float)
@@ -29,4 +30,64 @@ pub fn decoder() -> decode.Decoder(GroupPriceRateScalar) {
   use group_price_rate_id <- decode.field("group_price_rate_id", decode.int)
   use rate <- decode.field("rate", decode.float)
   decode.success(GroupPriceRateScalar(group_price_rate_id, rate))
+}
+
+pub fn create(
+  pool pool: db.DbPool,
+  group_price_rate_id group_price_rate_id: Int,
+  rate rate: Float,
+) -> Result(Int, db.DbError) {
+  use connection <- db.get_connection(pool)
+  create_wc(
+    connection: connection,
+    group_price_rate_id: group_price_rate_id,
+    rate: rate,
+  )
+}
+
+pub fn create_wc(
+  connection connection: db.Connection,
+  group_price_rate_id group_price_rate_id: Int,
+  rate rate: Float,
+) -> Result(Int, db.DbError) {
+  db.exec_with(
+    connection,
+    "INSERT INTO group_price_rates_scalar (group_price_rate_id, rate) VALUES ($1, $2)",
+    [db.int(group_price_rate_id), db.float(rate)],
+  )
+}
+
+pub fn create_or_fail(
+  pool pool: db.DbPool,
+  group_price_rate_id group_price_rate_id: Int,
+  rate rate: Float,
+  then then: fn(Int) -> Response,
+) -> Response {
+  use connection <- db.get_connection(pool)
+  create_or_fail_wc(
+    connection: connection,
+    group_price_rate_id: group_price_rate_id,
+    rate: rate,
+    then: then,
+  )
+}
+
+pub fn create_or_fail_wc(
+  connection connection: db.Connection,
+  group_price_rate_id group_price_rate_id: Int,
+  rate rate: Float,
+  then then: fn(Int) -> Response,
+) -> Response {
+  case
+    create_wc(
+      connection: connection,
+      group_price_rate_id: group_price_rate_id,
+      rate: rate,
+    )
+  {
+    Ok(count) -> then(count)
+    Error(db.ConnectionError(_)) -> response.empty(503)
+    Error(db.TimeoutError) -> response.empty(503)
+    Error(_) -> response.internal_server_error()
+  }
 }

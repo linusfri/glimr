@@ -6,6 +6,7 @@ import gleam/dynamic/decode
 import gleam/json
 import gleam/result
 import glimr/db/db
+import glimr/http/response.{type Response}
 
 pub type RateType {
   Single
@@ -64,4 +65,73 @@ pub fn decoder() -> decode.Decoder(GroupPriceRate) {
     group_price_id,
     result.unwrap(rate_type_from_string(rate_type), Single),
   ))
+}
+
+pub fn create(
+  pool pool: db.DbPool,
+  group_price_id group_price_id: Int,
+  rate_type rate_type: RateType,
+) -> Result(GroupPriceRate, db.DbError) {
+  use connection <- db.get_connection(pool)
+  create_wc(
+    connection: connection,
+    group_price_id: group_price_id,
+    rate_type: rate_type,
+  )
+}
+
+pub fn create_wc(
+  connection connection: db.Connection,
+  group_price_id group_price_id: Int,
+  rate_type rate_type: RateType,
+) -> Result(GroupPriceRate, db.DbError) {
+  case
+    db.query_with(
+      connection,
+      "INSERT INTO group_price_rates (group_price_id, rate_type) VALUES ($1, $2) RETURNING *",
+      [db.int(group_price_id), db.string(rate_type_to_string(rate_type))],
+      row_decoder(),
+    )
+  {
+    Ok(db.QueryResult(_, [row])) -> Ok(row)
+    Ok(db.QueryResult(_, [])) -> Error(db.NotFound)
+    Ok(_) -> Error(db.QueryError("Expected single row"))
+    Error(e) -> Error(e)
+  }
+}
+
+pub fn create_or_fail(
+  pool pool: db.DbPool,
+  group_price_id group_price_id: Int,
+  rate_type rate_type: RateType,
+  then then: fn(GroupPriceRate) -> Response,
+) -> Response {
+  use connection <- db.get_connection(pool)
+  create_or_fail_wc(
+    connection: connection,
+    group_price_id: group_price_id,
+    rate_type: rate_type,
+    then: then,
+  )
+}
+
+pub fn create_or_fail_wc(
+  connection connection: db.Connection,
+  group_price_id group_price_id: Int,
+  rate_type rate_type: RateType,
+  then then: fn(GroupPriceRate) -> Response,
+) -> Response {
+  case
+    create_wc(
+      connection: connection,
+      group_price_id: group_price_id,
+      rate_type: rate_type,
+    )
+  {
+    Ok(value) -> then(value)
+    Error(db.NotFound) -> response.not_found()
+    Error(db.ConnectionError(_)) -> response.empty(503)
+    Error(db.TimeoutError) -> response.empty(503)
+    Error(_) -> response.internal_server_error()
+  }
 }

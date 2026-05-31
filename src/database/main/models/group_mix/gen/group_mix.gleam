@@ -5,6 +5,7 @@
 import gleam/dynamic/decode
 import gleam/json
 import glimr/db/db
+import glimr/http/response.{type Response}
 
 pub type GroupMix {
   GroupMix(group_id: Int, fixed_percent: Float)
@@ -29,4 +30,64 @@ pub fn decoder() -> decode.Decoder(GroupMix) {
   use group_id <- decode.field("group_id", decode.int)
   use fixed_percent <- decode.field("fixed_percent", decode.float)
   decode.success(GroupMix(group_id, fixed_percent))
+}
+
+pub fn create(
+  pool pool: db.DbPool,
+  group_id group_id: Int,
+  fixed_percent fixed_percent: Float,
+) -> Result(Int, db.DbError) {
+  use connection <- db.get_connection(pool)
+  create_wc(
+    connection: connection,
+    group_id: group_id,
+    fixed_percent: fixed_percent,
+  )
+}
+
+pub fn create_wc(
+  connection connection: db.Connection,
+  group_id group_id: Int,
+  fixed_percent fixed_percent: Float,
+) -> Result(Int, db.DbError) {
+  db.exec_with(
+    connection,
+    "INSERT INTO groups_mix (group_id, fixed_percent) VALUES ($1, $2)",
+    [db.int(group_id), db.float(fixed_percent)],
+  )
+}
+
+pub fn create_or_fail(
+  pool pool: db.DbPool,
+  group_id group_id: Int,
+  fixed_percent fixed_percent: Float,
+  then then: fn(Int) -> Response,
+) -> Response {
+  use connection <- db.get_connection(pool)
+  create_or_fail_wc(
+    connection: connection,
+    group_id: group_id,
+    fixed_percent: fixed_percent,
+    then: then,
+  )
+}
+
+pub fn create_or_fail_wc(
+  connection connection: db.Connection,
+  group_id group_id: Int,
+  fixed_percent fixed_percent: Float,
+  then then: fn(Int) -> Response,
+) -> Response {
+  case
+    create_wc(
+      connection: connection,
+      group_id: group_id,
+      fixed_percent: fixed_percent,
+    )
+  {
+    Ok(count) -> then(count)
+    Error(db.ConnectionError(_)) -> response.empty(503)
+    Error(db.TimeoutError) -> response.empty(503)
+    Error(_) -> response.internal_server_error()
+  }
 }
