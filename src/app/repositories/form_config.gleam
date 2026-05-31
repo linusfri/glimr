@@ -59,16 +59,16 @@ pub type NewFormConfig {
 // ---------------------------------------------------------------------------
 
 /// Creates a form_config and all downstream records in a single transaction.
-/// Depending on `detail`, the matching type-specific config row is createed
+/// Depending on `detail`, the matching type-specific config row is created
 /// (form_configs_variable / _mix / _spot). Each price and its rate chain is
-/// then createed automatically.
+/// then created automatically.
 pub fn create(
   pool pool: db.DbPool,
-  input input: NewFormConfig,
+  form_data form_data: NewFormConfig,
 ) -> Result(FormConfig, db.DbError) {
   use conn <- db.transaction(pool, 3)
 
-  let form_type = case input.detail {
+  let form_type = case form_data.detail {
     NewFixed -> Fixed
     NewVariable(..) -> Variable
     NewMix(..) -> Mix
@@ -78,12 +78,12 @@ pub fn create(
 
   use config <- result.try(form_config.create_wc(
     connection: conn,
-    agreement_id: input.agreement_id,
+    agreement_id: form_data.agreement_id,
     form_type:,
   ))
-  use _ <- result.try(create_detail(conn, config.id, input.detail))
+  use _ <- result.try(create_detail(conn, config.id, form_data.detail))
   use _ <- result.try(
-    list.try_map(input.prices, fn(price) {
+    list.try_map(form_data.prices, fn(price) {
       create_price(conn, config.id, price)
     }),
   )
