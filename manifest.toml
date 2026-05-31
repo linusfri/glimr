@@ -56,3 +56,4 @@ glimr_auth = { version = ">= 1.0.1 and < 2.0.0" }
 glimr_postgres = { version = ">= 1.0.4 and < 2.0.0" }
 glimr_sqlite = { version = ">= 1.0.0 and < 2.0.0" }
 mist = { version = ">= 6.0.0 and < 7.0.0" }
+wisp = { version = ">= 2.2.2 and < 3.0.0" }

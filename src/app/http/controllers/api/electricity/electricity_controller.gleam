@@ -3,7 +3,6 @@ import app/http/validators/store_electricity_form
 import app/lib/error
 import app/repositories/form_config
 import gleam/json
-import gleam/string
 import glimr/http/context.{type Context}
 import glimr/http/response.{type Response}
 
