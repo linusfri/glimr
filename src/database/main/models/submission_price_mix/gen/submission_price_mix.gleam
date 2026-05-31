@@ -11,7 +11,7 @@ pub type SubmissionPriceMix {
     submission_price_id: Int,
     price: Float,
     price_variable: Float,
-    mixed_variable_portion: Float,
+    fixed_percent: Float,
   )
 }
 
@@ -19,12 +19,12 @@ fn row_decoder() -> decode.Decoder(SubmissionPriceMix) {
   use submission_price_id <- decode.field(0, decode.int)
   use price <- decode.field(1, decode.float)
   use price_variable <- decode.field(2, decode.float)
-  use mixed_variable_portion <- decode.field(3, decode.float)
+  use fixed_percent <- decode.field(3, decode.float)
   decode.success(SubmissionPriceMix(
     submission_price_id,
     price,
     price_variable,
-    mixed_variable_portion,
+    fixed_percent,
   ))
 }
 
@@ -34,7 +34,7 @@ pub fn encoder() -> fn(SubmissionPriceMix) -> json.Json {
       #("submission_price_id", json.int(model.submission_price_id)),
       #("price", json.float(model.price)),
       #("price_variable", json.float(model.price_variable)),
-      #("mixed_variable_portion", json.float(model.mixed_variable_portion)),
+      #("fixed_percent", json.float(model.fixed_percent)),
     ])
   }
 }
@@ -43,14 +43,11 @@ pub fn decoder() -> decode.Decoder(SubmissionPriceMix) {
   use submission_price_id <- decode.field("submission_price_id", decode.int)
   use price <- decode.field("price", decode.float)
   use price_variable <- decode.field("price_variable", decode.float)
-  use mixed_variable_portion <- decode.field(
-    "mixed_variable_portion",
-    decode.float,
-  )
+  use fixed_percent <- decode.field("fixed_percent", decode.float)
   decode.success(SubmissionPriceMix(
     submission_price_id,
     price,
     price_variable,
-    mixed_variable_portion,
+    fixed_percent,
   ))
 }

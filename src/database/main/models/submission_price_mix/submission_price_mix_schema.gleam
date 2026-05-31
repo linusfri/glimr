@@ -8,6 +8,6 @@ pub fn definition() {
       |> schema.on_delete(schema.Cascade),
     schema.float("price"),
     schema.float("price_variable"),
-    schema.float("mixed_variable_portion"),
+    schema.float("fixed_percent"),
   ])
 }

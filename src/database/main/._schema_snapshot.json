@@ -237,7 +237,7 @@
         {"name": "submission_price_id", "type": "Foreign(submission_prices,onDelete:Cascade)", "nullable": false, "has_default": false},
         {"name": "price", "type": "Float", "nullable": false, "has_default": false},
         {"name": "price_variable", "type": "Float", "nullable": false, "has_default": false},
-        {"name": "mixed_variable_portion", "type": "Float", "nullable": false, "has_default": false}
+        {"name": "fixed_percent", "type": "Float", "nullable": false, "has_default": false}
       ],
       "indexes": [
 

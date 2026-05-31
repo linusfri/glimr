@@ -125,7 +125,7 @@ CREATE TABLE submission_prices_mix (
   submission_price_id INTEGER REFERENCES submission_prices(id) ON DELETE CASCADE NOT NULL,
   price DOUBLE PRECISION NOT NULL,
   price_variable DOUBLE PRECISION NOT NULL,
-  mixed_variable_portion DOUBLE PRECISION NOT NULL
+  fixed_percent DOUBLE PRECISION NOT NULL
 );
 
 CREATE TABLE submission_prices_spot (

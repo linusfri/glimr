@@ -177,7 +177,7 @@ type SubmissionPrice {
   MixSubmission(
     price: Float,
     price_variable: Float,
-    mixed_variable_portion: Float,
+    fixed_percent: Float,
     price_addition: Float,
   )
   SpotSubmission(
