@@ -43,8 +43,8 @@ pub type AgreementSubmission {
     id: Int,
     agreement_id: Int,
     sign_type: SignType,
-    start_date: String,
-    end_date: String,
+    start_date: Int,
+    end_date: Int,
     branch: Option(String),
     energy_source: String,
     exchange_right: Bool,
@@ -58,8 +58,8 @@ fn row_decoder() -> decode.Decoder(AgreementSubmission) {
   use id <- decode.field(0, decode.int)
   use agreement_id <- decode.field(1, decode.int)
   use sign_type <- decode.field(2, decode.string)
-  use start_date <- decode.field(3, decode.string)
-  use end_date <- decode.field(4, decode.string)
+  use start_date <- decode.field(3, decode.int)
+  use end_date <- decode.field(4, decode.int)
   use branch <- decode.field(5, decode.optional(decode.string))
   use energy_source <- decode.field(6, decode.string)
   use exchange_right <- decode.field(7, glimr_decode.bool())
@@ -87,8 +87,8 @@ pub fn encoder() -> fn(AgreementSubmission) -> json.Json {
       #("id", json.int(model.id)),
       #("agreement_id", json.int(model.agreement_id)),
       #("sign_type", json.string(sign_type_to_string(model.sign_type))),
-      #("start_date", json.string(model.start_date)),
-      #("end_date", json.string(model.end_date)),
+      #("start_date", json.int(model.start_date)),
+      #("end_date", json.int(model.end_date)),
       #("branch", json.nullable(model.branch, json.string)),
       #("energy_source", json.string(model.energy_source)),
       #("exchange_right", json.bool(model.exchange_right)),
@@ -103,8 +103,8 @@ pub fn decoder() -> decode.Decoder(AgreementSubmission) {
   use id <- decode.field("id", decode.int)
   use agreement_id <- decode.field("agreement_id", decode.int)
   use sign_type <- decode.field("sign_type", decode.string)
-  use start_date <- decode.field("start_date", decode.string)
-  use end_date <- decode.field("end_date", decode.string)
+  use start_date <- decode.field("start_date", decode.int)
+  use end_date <- decode.field("end_date", decode.int)
   use branch <- decode.field("branch", decode.optional(decode.string))
   use energy_source <- decode.field("energy_source", decode.string)
   use exchange_right <- decode.field("exchange_right", glimr_decode.bool())

@@ -36,8 +36,8 @@ pub type Group {
     title: String,
     contract_period_months: Int,
     yearly_fee: Float,
-    visible_from: String,
-    visible_until: String,
+    visible_from: Int,
+    visible_until: Int,
   )
 }
 
@@ -48,8 +48,8 @@ fn row_decoder() -> decode.Decoder(Group) {
   use title <- decode.field(3, decode.string)
   use contract_period_months <- decode.field(4, decode.int)
   use yearly_fee <- decode.field(5, decode.float)
-  use visible_from <- decode.field(6, decode.string)
-  use visible_until <- decode.field(7, decode.string)
+  use visible_from <- decode.field(6, decode.int)
+  use visible_until <- decode.field(7, decode.int)
   decode.success(Group(
     id,
     form_config_id,
@@ -71,8 +71,8 @@ pub fn encoder() -> fn(Group) -> json.Json {
       #("title", json.string(model.title)),
       #("contract_period_months", json.int(model.contract_period_months)),
       #("yearly_fee", json.float(model.yearly_fee)),
-      #("visible_from", json.string(model.visible_from)),
-      #("visible_until", json.string(model.visible_until)),
+      #("visible_from", json.int(model.visible_from)),
+      #("visible_until", json.int(model.visible_until)),
     ])
   }
 }
@@ -87,8 +87,8 @@ pub fn decoder() -> decode.Decoder(Group) {
     decode.int,
   )
   use yearly_fee <- decode.field("yearly_fee", decode.float)
-  use visible_from <- decode.field("visible_from", decode.string)
-  use visible_until <- decode.field("visible_until", decode.string)
+  use visible_from <- decode.field("visible_from", decode.int)
+  use visible_until <- decode.field("visible_until", decode.int)
   decode.success(Group(
     id,
     form_config_id,
@@ -108,8 +108,8 @@ pub fn create(
   title title: String,
   contract_period_months contract_period_months: Int,
   yearly_fee yearly_fee: Float,
-  visible_from visible_from: String,
-  visible_until visible_until: String,
+  visible_from visible_from: Int,
+  visible_until visible_until: Int,
 ) -> Result(Group, db.DbError) {
   use connection <- db.get_connection(pool)
   create_wc(
@@ -131,8 +131,8 @@ pub fn create_wc(
   title title: String,
   contract_period_months contract_period_months: Int,
   yearly_fee yearly_fee: Float,
-  visible_from visible_from: String,
-  visible_until visible_until: String,
+  visible_from visible_from: Int,
+  visible_until visible_until: Int,
 ) -> Result(Group, db.DbError) {
   case
     db.query_with(
@@ -144,8 +144,8 @@ pub fn create_wc(
         db.string(title),
         db.int(contract_period_months),
         db.float(yearly_fee),
-        db.string(visible_from),
-        db.string(visible_until),
+        db.int(visible_from),
+        db.int(visible_until),
       ],
       row_decoder(),
     )
@@ -164,8 +164,8 @@ pub fn create_or_fail(
   title title: String,
   contract_period_months contract_period_months: Int,
   yearly_fee yearly_fee: Float,
-  visible_from visible_from: String,
-  visible_until visible_until: String,
+  visible_from visible_from: Int,
+  visible_until visible_until: Int,
   then then: fn(Group) -> Response,
 ) -> Response {
   use connection <- db.get_connection(pool)
@@ -189,8 +189,8 @@ pub fn create_or_fail_wc(
   title title: String,
   contract_period_months contract_period_months: Int,
   yearly_fee yearly_fee: Float,
-  visible_from visible_from: String,
-  visible_until visible_until: String,
+  visible_from visible_from: Int,
+  visible_until visible_until: Int,
   then then: fn(Group) -> Response,
 ) -> Response {
   case

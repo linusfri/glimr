@@ -24,6 +24,7 @@ gleam_json = ">= 3.1.0 and < 4.0.0"
 glimr_postgres = ">= 1.0.4 and < 2.0.0"
 glimr_auth = ">= 1.0.1 and < 2.0.0"
 wisp = ">= 2.2.2 and < 3.0.0"
+gleam_time = ">= 1.8.0 and < 2.0.0"
 
 [dev-dependencies]
 gleeunit = ">= 1.0.0 and < 2.0.0"

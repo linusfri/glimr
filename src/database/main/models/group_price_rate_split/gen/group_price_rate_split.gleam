@@ -12,7 +12,7 @@ pub type GroupPriceRateSplit {
     group_price_rate_id: Int,
     fixed_rate: Float,
     variable_rate: Float,
-    valid_month: String,
+    valid_month: Int,
   )
 }
 
@@ -20,7 +20,7 @@ fn row_decoder() -> decode.Decoder(GroupPriceRateSplit) {
   use group_price_rate_id <- decode.field(0, decode.int)
   use fixed_rate <- decode.field(1, decode.float)
   use variable_rate <- decode.field(2, decode.float)
-  use valid_month <- decode.field(3, decode.string)
+  use valid_month <- decode.field(3, decode.int)
   decode.success(GroupPriceRateSplit(
     group_price_rate_id,
     fixed_rate,
@@ -35,7 +35,7 @@ pub fn encoder() -> fn(GroupPriceRateSplit) -> json.Json {
       #("group_price_rate_id", json.int(model.group_price_rate_id)),
       #("fixed_rate", json.float(model.fixed_rate)),
       #("variable_rate", json.float(model.variable_rate)),
-      #("valid_month", json.string(model.valid_month)),
+      #("valid_month", json.int(model.valid_month)),
     ])
   }
 }
@@ -44,7 +44,7 @@ pub fn decoder() -> decode.Decoder(GroupPriceRateSplit) {
   use group_price_rate_id <- decode.field("group_price_rate_id", decode.int)
   use fixed_rate <- decode.field("fixed_rate", decode.float)
   use variable_rate <- decode.field("variable_rate", decode.float)
-  use valid_month <- decode.field("valid_month", decode.string)
+  use valid_month <- decode.field("valid_month", decode.int)
   decode.success(GroupPriceRateSplit(
     group_price_rate_id,
     fixed_rate,
@@ -58,7 +58,7 @@ pub fn create(
   group_price_rate_id group_price_rate_id: Int,
   fixed_rate fixed_rate: Float,
   variable_rate variable_rate: Float,
-  valid_month valid_month: String,
+  valid_month valid_month: Int,
 ) -> Result(Int, db.DbError) {
   use connection <- db.get_connection(pool)
   create_wc(
@@ -75,7 +75,7 @@ pub fn create_wc(
   group_price_rate_id group_price_rate_id: Int,
   fixed_rate fixed_rate: Float,
   variable_rate variable_rate: Float,
-  valid_month valid_month: String,
+  valid_month valid_month: Int,
 ) -> Result(Int, db.DbError) {
   db.exec_with(
     connection,
@@ -84,7 +84,7 @@ pub fn create_wc(
       db.int(group_price_rate_id),
       db.float(fixed_rate),
       db.float(variable_rate),
-      db.string(valid_month),
+      db.int(valid_month),
     ],
   )
 }
@@ -94,7 +94,7 @@ pub fn create_or_fail(
   group_price_rate_id group_price_rate_id: Int,
   fixed_rate fixed_rate: Float,
   variable_rate variable_rate: Float,
-  valid_month valid_month: String,
+  valid_month valid_month: Int,
   then then: fn(Int) -> Response,
 ) -> Response {
   use connection <- db.get_connection(pool)
@@ -113,7 +113,7 @@ pub fn create_or_fail_wc(
   group_price_rate_id group_price_rate_id: Int,
   fixed_rate fixed_rate: Float,
   variable_rate variable_rate: Float,
-  valid_month valid_month: String,
+  valid_month valid_month: Int,
   then then: fn(Int) -> Response,
 ) -> Response {
   case

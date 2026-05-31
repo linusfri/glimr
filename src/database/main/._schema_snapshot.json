@@ -5,8 +5,8 @@
         {"name": "id", "type": "Id", "nullable": false, "has_default": false},
         {"name": "agreement_id", "type": "Foreign(agreements,onDelete:Cascade)", "nullable": false, "has_default": false},
         {"name": "sign_type", "type": "Enum(sign_type:new,resign,move,assigned_price,company)", "nullable": false, "has_default": false},
-        {"name": "start_date", "type": "Date", "nullable": false, "has_default": false},
-        {"name": "end_date", "type": "Date", "nullable": false, "has_default": false},
+        {"name": "start_date", "type": "UnixTimestamp", "nullable": false, "has_default": false},
+        {"name": "end_date", "type": "UnixTimestamp", "nullable": false, "has_default": false},
         {"name": "branch", "type": "String", "nullable": true, "has_default": false},
         {"name": "energy_source", "type": "String", "nullable": false, "has_default": false},
         {"name": "exchange_right", "type": "Boolean", "nullable": false, "has_default": false},
@@ -95,7 +95,7 @@
       "columns": [
         {"name": "form_price_rate_id", "type": "Foreign(form_price_rates,onDelete:Cascade)", "nullable": false, "has_default": false},
         {"name": "rate", "type": "Float", "nullable": false, "has_default": false},
-        {"name": "valid_month", "type": "Date", "nullable": false, "has_default": false}
+        {"name": "valid_month", "type": "UnixTimestamp", "nullable": false, "has_default": false}
       ],
       "indexes": [
 
@@ -106,7 +106,7 @@
         {"name": "form_price_rate_id", "type": "Foreign(form_price_rates,onDelete:Cascade)", "nullable": false, "has_default": false},
         {"name": "fixed_rate", "type": "Float", "nullable": false, "has_default": false},
         {"name": "variable_rate", "type": "Float", "nullable": false, "has_default": false},
-        {"name": "valid_month", "type": "Date", "nullable": false, "has_default": false}
+        {"name": "valid_month", "type": "UnixTimestamp", "nullable": false, "has_default": false}
       ],
       "indexes": [
 
@@ -116,8 +116,8 @@
       "columns": [
         {"name": "id", "type": "Id", "nullable": false, "has_default": false},
         {"name": "form_config_id", "type": "Foreign(form_configs,onDelete:Cascade)", "nullable": false, "has_default": false},
-        {"name": "signable_from", "type": "Date", "nullable": false, "has_default": false},
-        {"name": "signable_until", "type": "Date", "nullable": false, "has_default": false},
+        {"name": "signable_from", "type": "UnixTimestamp", "nullable": false, "has_default": false},
+        {"name": "signable_until", "type": "UnixTimestamp", "nullable": false, "has_default": false},
         {"name": "is_best_value", "type": "Boolean", "nullable": false, "has_default": true}
       ],
       "indexes": [
@@ -138,7 +138,7 @@
       "columns": [
         {"name": "group_price_rate_id", "type": "Foreign(group_price_rates,onDelete:Cascade)", "nullable": false, "has_default": false},
         {"name": "rate", "type": "Float", "nullable": false, "has_default": false},
-        {"name": "valid_month", "type": "Date", "nullable": false, "has_default": false}
+        {"name": "valid_month", "type": "UnixTimestamp", "nullable": false, "has_default": false}
       ],
       "indexes": [
 
@@ -149,7 +149,7 @@
         {"name": "group_price_rate_id", "type": "Foreign(group_price_rates,onDelete:Cascade)", "nullable": false, "has_default": false},
         {"name": "fixed_rate", "type": "Float", "nullable": false, "has_default": false},
         {"name": "variable_rate", "type": "Float", "nullable": false, "has_default": false},
-        {"name": "valid_month", "type": "Date", "nullable": false, "has_default": false}
+        {"name": "valid_month", "type": "UnixTimestamp", "nullable": false, "has_default": false}
       ],
       "indexes": [
 
@@ -159,8 +159,8 @@
       "columns": [
         {"name": "id", "type": "Id", "nullable": false, "has_default": false},
         {"name": "group_id", "type": "Foreign(groups,onDelete:Cascade)", "nullable": false, "has_default": false},
-        {"name": "signable_from", "type": "Date", "nullable": false, "has_default": false},
-        {"name": "signable_until", "type": "Date", "nullable": false, "has_default": false},
+        {"name": "signable_from", "type": "UnixTimestamp", "nullable": false, "has_default": false},
+        {"name": "signable_until", "type": "UnixTimestamp", "nullable": false, "has_default": false},
         {"name": "is_best_value", "type": "Boolean", "nullable": false, "has_default": true}
       ],
       "indexes": [
@@ -175,8 +175,8 @@
         {"name": "title", "type": "String", "nullable": false, "has_default": false},
         {"name": "contract_period_months", "type": "Int", "nullable": false, "has_default": false},
         {"name": "yearly_fee", "type": "Float", "nullable": false, "has_default": false},
-        {"name": "visible_from", "type": "Timestamp", "nullable": false, "has_default": false},
-        {"name": "visible_until", "type": "Timestamp", "nullable": false, "has_default": false}
+        {"name": "visible_from", "type": "UnixTimestamp", "nullable": false, "has_default": false},
+        {"name": "visible_until", "type": "UnixTimestamp", "nullable": false, "has_default": false}
       ],
       "indexes": [
 

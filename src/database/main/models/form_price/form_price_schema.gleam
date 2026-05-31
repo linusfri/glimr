@@ -7,8 +7,8 @@ pub fn definition() {
     schema.id(),
     schema.foreign("form_config_id", "form_configs")
       |> schema.on_delete(schema.Cascade),
-    schema.date("signable_from"),
-    schema.date("signable_until"),
+    schema.unix_timestamp("signable_from"),
+    schema.unix_timestamp("signable_until"),
     schema.boolean("is_best_value") |> schema.default_bool(False),
   ])
 }

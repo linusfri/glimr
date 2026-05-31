@@ -22,15 +22,15 @@ import glimr/db/db
 
 // Shared rate detail — used by both form prices and group prices
 pub type NewPriceRateDetail {
-  NewScalarRate(rate: Float, valid_month: String)
-  NewSplitRate(fixed_rate: Float, variable_rate: Float, valid_month: String)
+  NewScalarRate(rate: Float, valid_month: Int)
+  NewSplitRate(fixed_rate: Float, variable_rate: Float, valid_month: Int)
 }
 
 // Form prices (variable / spot only)
 pub type NewFormPrice {
   NewFormPrice(
-    signable_from: String,
-    signable_until: String,
+    signable_from: Int,
+    signable_until: Int,
     is_best_value: Bool,
     rate: NewPriceRateDetail,
   )
@@ -45,8 +45,8 @@ pub type NewGroupDetail {
 // Group price
 pub type NewGroupPrice {
   NewGroupPrice(
-    signable_from: String,
-    signable_until: String,
+    signable_from: Int,
+    signable_until: Int,
     is_best_value: Bool,
     rate: NewPriceRateDetail,
   )
@@ -57,8 +57,8 @@ pub type NewGroup {
     title: String,
     contract_period_months: Int,
     yearly_fee: Float,
-    visible_from: String,
-    visible_until: String,
+    visible_from: Int,
+    visible_until: Int,
     detail: NewGroupDetail,
     prices: List(NewGroupPrice),
   )

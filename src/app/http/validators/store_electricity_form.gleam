@@ -7,9 +7,26 @@ import app/repositories/form_config.{
 import gleam/dynamic/decode
 import gleam/json
 import gleam/option
+import gleam/time/timestamp
 import glimr/http/context.{type Context}
 import glimr/http/response.{type Response}
 import wisp
+
+// ---------------------------------------------------------------------------
+// Helpers
+// ---------------------------------------------------------------------------
+
+/// Decodes a "YYYY-MM-DD" string field into a Unix epoch Int.
+fn date_decoder() -> decode.Decoder(Int) {
+  use date_string <- decode.then(decode.string)
+  case timestamp.parse_rfc3339(date_string <> "T00:00:00Z") {
+    Ok(timestamp) -> {
+      let #(seconds, _) = timestamp.to_unix_seconds_and_nanoseconds(timestamp)
+      decode.success(seconds)
+    }
+    Error(_) -> decode.failure(0, "valid ISO date string (YYYY-MM-DD)")
+  }
+}
 
 // ---------------------------------------------------------------------------
 // Decoders
@@ -21,20 +38,20 @@ fn rate_decoder() -> decode.Decoder(form_config.NewPriceRateDetail) {
     "split" -> {
       use fixed_rate <- decode.field("fixed_rate", decode.float)
       use variable_rate <- decode.field("variable_rate", decode.float)
-      use valid_month <- decode.field("valid_month", decode.string)
+      use valid_month <- decode.field("valid_month", date_decoder())
       decode.success(NewSplitRate(fixed_rate:, variable_rate:, valid_month:))
     }
     _ -> {
       use rate <- decode.field("rate", decode.float)
-      use valid_month <- decode.field("valid_month", decode.string)
+      use valid_month <- decode.field("valid_month", date_decoder())
       decode.success(NewScalarRate(rate:, valid_month:))
     }
   }
 }
 
 fn group_price_decoder() -> decode.Decoder(form_config.NewGroupPrice) {
-  use signable_from <- decode.field("signable_from", decode.string)
-  use signable_until <- decode.field("signable_until", decode.string)
+  use signable_from <- decode.field("signable_from", date_decoder())
+  use signable_until <- decode.field("signable_until", date_decoder())
   use is_best_value <- decode.field("is_best_value", decode.bool)
   use rate <- decode.field("rate", rate_decoder())
   decode.success(NewGroupPrice(
@@ -52,8 +69,8 @@ fn group_decoder() -> decode.Decoder(form_config.NewGroup) {
     decode.int,
   )
   use yearly_fee <- decode.field("yearly_fee", decode.float)
-  use visible_from <- decode.field("visible_from", decode.string)
-  use visible_until <- decode.field("visible_until", decode.string)
+  use visible_from <- decode.field("visible_from", date_decoder())
+  use visible_until <- decode.field("visible_until", date_decoder())
   use fp <- decode.optional_field(
     "fixed_percent",
     option.None,
@@ -76,8 +93,8 @@ fn group_decoder() -> decode.Decoder(form_config.NewGroup) {
 }
 
 fn form_price_decoder() -> decode.Decoder(form_config.NewFormPrice) {
-  use signable_from <- decode.field("signable_from", decode.string)
-  use signable_until <- decode.field("signable_until", decode.string)
+  use signable_from <- decode.field("signable_from", date_decoder())
+  use signable_until <- decode.field("signable_until", date_decoder())
   use is_best_value <- decode.field("is_best_value", decode.bool)
   use rate <- decode.field("rate", rate_decoder())
   decode.success(NewFormPrice(

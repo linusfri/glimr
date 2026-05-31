@@ -22,8 +22,8 @@ CREATE TABLE agreement_submissions (
   id SERIAL PRIMARY KEY NOT NULL,
   agreement_id INTEGER REFERENCES agreements(id) ON DELETE CASCADE NOT NULL,
   sign_type sign_type NOT NULL,
-  start_date DATE NOT NULL,
-  end_date DATE NOT NULL,
+  start_date BIGINT NOT NULL,
+  end_date BIGINT NOT NULL,
   branch VARCHAR(255),
   energy_source VARCHAR(255) NOT NULL,
   exchange_right BOOLEAN NOT NULL,
@@ -48,8 +48,8 @@ CREATE TABLE groups (
   title VARCHAR(255) NOT NULL,
   contract_period_months INTEGER NOT NULL,
   yearly_fee DOUBLE PRECISION NOT NULL,
-  visible_from TIMESTAMP NOT NULL,
-  visible_until TIMESTAMP NOT NULL
+  visible_from BIGINT NOT NULL,
+  visible_until BIGINT NOT NULL
 );
 
 CREATE TABLE form_configs_variable (
@@ -76,8 +76,8 @@ CREATE TABLE submission_prices (
 CREATE TABLE form_prices (
   id SERIAL PRIMARY KEY NOT NULL,
   form_config_id INTEGER REFERENCES form_configs(id) ON DELETE CASCADE NOT NULL,
-  signable_from DATE NOT NULL,
-  signable_until DATE NOT NULL,
+  signable_from BIGINT NOT NULL,
+  signable_until BIGINT NOT NULL,
   is_best_value BOOLEAN NOT NULL DEFAULT false
 );
 
@@ -103,8 +103,8 @@ CREATE TABLE submission_facilities (
 CREATE TABLE group_prices (
   id SERIAL PRIMARY KEY NOT NULL,
   group_id INTEGER REFERENCES groups(id) ON DELETE CASCADE NOT NULL,
-  signable_from DATE NOT NULL,
-  signable_until DATE NOT NULL,
+  signable_from BIGINT NOT NULL,
+  signable_until BIGINT NOT NULL,
   is_best_value BOOLEAN NOT NULL DEFAULT false
 );
 
@@ -154,26 +154,26 @@ CREATE TABLE form_price_rates_split (
   form_price_rate_id INTEGER REFERENCES form_price_rates(id) ON DELETE CASCADE NOT NULL,
   fixed_rate DOUBLE PRECISION NOT NULL,
   variable_rate DOUBLE PRECISION NOT NULL,
-  valid_month DATE NOT NULL
+  valid_month BIGINT NOT NULL
 );
 
 CREATE TABLE form_price_rates_scalar (
   form_price_rate_id INTEGER REFERENCES form_price_rates(id) ON DELETE CASCADE NOT NULL,
   rate DOUBLE PRECISION NOT NULL,
-  valid_month DATE NOT NULL
+  valid_month BIGINT NOT NULL
 );
 
 CREATE TABLE group_price_rates_scalar (
   group_price_rate_id INTEGER REFERENCES group_price_rates(id) ON DELETE CASCADE NOT NULL,
   rate DOUBLE PRECISION NOT NULL,
-  valid_month DATE NOT NULL
+  valid_month BIGINT NOT NULL
 );
 
 CREATE TABLE group_price_rates_split (
   group_price_rate_id INTEGER REFERENCES group_price_rates(id) ON DELETE CASCADE NOT NULL,
   fixed_rate DOUBLE PRECISION NOT NULL,
   variable_rate DOUBLE PRECISION NOT NULL,
-  valid_month DATE NOT NULL
+  valid_month BIGINT NOT NULL
 );
 
 

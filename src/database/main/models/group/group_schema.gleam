@@ -11,7 +11,7 @@ pub fn definition() {
     schema.string("title"),
     schema.int("contract_period_months"),
     schema.float("yearly_fee"),
-    schema.timestamp("visible_from"),
-    schema.timestamp("visible_until"),
+    schema.unix_timestamp("visible_from"),
+    schema.unix_timestamp("visible_until"),
   ])
 }

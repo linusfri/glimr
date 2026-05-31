@@ -12,8 +12,8 @@ pub type FormPrice {
   FormPrice(
     id: Int,
     form_config_id: Int,
-    signable_from: String,
-    signable_until: String,
+    signable_from: Int,
+    signable_until: Int,
     is_best_value: Bool,
   )
 }
@@ -21,8 +21,8 @@ pub type FormPrice {
 fn row_decoder() -> decode.Decoder(FormPrice) {
   use id <- decode.field(0, decode.int)
   use form_config_id <- decode.field(1, decode.int)
-  use signable_from <- decode.field(2, decode.string)
-  use signable_until <- decode.field(3, decode.string)
+  use signable_from <- decode.field(2, decode.int)
+  use signable_until <- decode.field(3, decode.int)
   use is_best_value <- decode.field(4, glimr_decode.bool())
   decode.success(FormPrice(
     id,
@@ -38,8 +38,8 @@ pub fn encoder() -> fn(FormPrice) -> json.Json {
     json.object([
       #("id", json.int(model.id)),
       #("form_config_id", json.int(model.form_config_id)),
-      #("signable_from", json.string(model.signable_from)),
-      #("signable_until", json.string(model.signable_until)),
+      #("signable_from", json.int(model.signable_from)),
+      #("signable_until", json.int(model.signable_until)),
       #("is_best_value", json.bool(model.is_best_value)),
     ])
   }
@@ -48,8 +48,8 @@ pub fn encoder() -> fn(FormPrice) -> json.Json {
 pub fn decoder() -> decode.Decoder(FormPrice) {
   use id <- decode.field("id", decode.int)
   use form_config_id <- decode.field("form_config_id", decode.int)
-  use signable_from <- decode.field("signable_from", decode.string)
-  use signable_until <- decode.field("signable_until", decode.string)
+  use signable_from <- decode.field("signable_from", decode.int)
+  use signable_until <- decode.field("signable_until", decode.int)
   use is_best_value <- decode.field("is_best_value", glimr_decode.bool())
   decode.success(FormPrice(
     id,
@@ -63,8 +63,8 @@ pub fn decoder() -> decode.Decoder(FormPrice) {
 pub fn create(
   pool pool: db.DbPool,
   form_config_id form_config_id: Int,
-  signable_from signable_from: String,
-  signable_until signable_until: String,
+  signable_from signable_from: Int,
+  signable_until signable_until: Int,
   is_best_value is_best_value: Bool,
 ) -> Result(FormPrice, db.DbError) {
   use connection <- db.get_connection(pool)
@@ -80,8 +80,8 @@ pub fn create(
 pub fn create_wc(
   connection connection: db.Connection,
   form_config_id form_config_id: Int,
-  signable_from signable_from: String,
-  signable_until signable_until: String,
+  signable_from signable_from: Int,
+  signable_until signable_until: Int,
   is_best_value is_best_value: Bool,
 ) -> Result(FormPrice, db.DbError) {
   case
@@ -90,8 +90,8 @@ pub fn create_wc(
       "INSERT INTO form_prices (form_config_id, signable_from, signable_until, is_best_value) VALUES ($1, $2, $3, $4) RETURNING *",
       [
         db.int(form_config_id),
-        db.string(signable_from),
-        db.string(signable_until),
+        db.int(signable_from),
+        db.int(signable_until),
         db.bool(is_best_value),
       ],
       row_decoder(),
@@ -107,8 +107,8 @@ pub fn create_wc(
 pub fn create_or_fail(
   pool pool: db.DbPool,
   form_config_id form_config_id: Int,
-  signable_from signable_from: String,
-  signable_until signable_until: String,
+  signable_from signable_from: Int,
+  signable_until signable_until: Int,
   is_best_value is_best_value: Bool,
   then then: fn(FormPrice) -> Response,
 ) -> Response {
@@ -126,8 +126,8 @@ pub fn create_or_fail(
 pub fn create_or_fail_wc(
   connection connection: db.Connection,
   form_config_id form_config_id: Int,
-  signable_from signable_from: String,
-  signable_until signable_until: String,
+  signable_from signable_from: Int,
+  signable_until signable_until: Int,
   is_best_value is_best_value: Bool,
   then then: fn(FormPrice) -> Response,
 ) -> Response {
