@@ -34,7 +34,7 @@ agreements ||--o{ energy_sources
 entity form_configs {
   * id : int
   --
-  * form_type : enum  /' fixed|variable|mix|spot|winter_security '/
+  * form_type : enum <<unique>> /' fixed|variable|mix|spot|winter_security '/
 }
 
 
