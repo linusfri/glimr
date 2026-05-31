@@ -151,14 +151,14 @@ fn create_priced_detail(
   detail: NewFormConfigPricedDetail,
 ) -> Result(Int, db.DbError) {
   case detail {
-    NewVariable(yearly_fee:, variable_costs:) ->
+    NewVariable(yearly_fee:, variable_costs:) -> {
       form_config_variable.create_wc(
         connection: conn,
         form_config_id:,
         yearly_fee:,
         variable_costs:,
       )
-
+    }
     NewSpot(yearly_fee:, variable_costs:, surcharge:) ->
       form_config_spot.create_wc(
         connection: conn,
@@ -199,7 +199,6 @@ fn create_form_price(
     signable_until: price.signable_until,
     is_best_value: price.is_best_value,
   ))
-
   let rate_type = case price.rate {
     NewScalarRate(..) -> form_price_rate.Scalar
     NewSplitRate(..) -> form_price_rate.Split
