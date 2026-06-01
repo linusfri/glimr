@@ -105,8 +105,8 @@ entity form_prices {
   * id : int
   --
   * form_config_id : int <<FK>>  /' variable|spot '/
-  * signable_from : date
-  * signable_until : date
+  * signable_from : timestamp
+  * signable_until : timestamp
   * is_best_value : bool
 }
 
@@ -114,8 +114,8 @@ entity group_prices {
   * id : int
   --
   * group_id : int <<FK>>  /' fixed|mix|winter_security '/
-  * signable_from : date
-  * signable_until : date
+  * signable_from : timestamp
+  * signable_until : timestamp
   * is_best_value : bool
 }
 
@@ -144,7 +144,7 @@ entity form_price_rates_scalar {
   * form_price_rate_id : int <<FK>>
   --
   * rate : float
-  * valid_month : date
+  * valid_month : timestamp
 }
 
 entity form_price_rates_split {
@@ -152,14 +152,14 @@ entity form_price_rates_split {
   --
   * fixed_rate : float
   * variable_rate : float
-  * valid_month : date
+  * valid_month : timestamp
 }
 
 entity group_price_rates_scalar {
   * group_price_rate_id : int <<FK>>
   --
   * rate : float
-  * valid_month : date
+  * valid_month : timestamp
 }
 
 entity group_price_rates_split {
@@ -167,7 +167,7 @@ entity group_price_rates_split {
   --
   * fixed_rate : float
   * variable_rate : float
-  * valid_month : date
+  * valid_month : timestamp
 }
 
 form_prices ||--|| form_price_rates
@@ -186,8 +186,8 @@ entity agreement_submissions {
   --
   * agreement_id : int <<FK>>
   * sign_type : enum /'new|resign|move|assigned_price|company'/
-  * start_date : date
-  * end_date : date
+  * start_timestamp : timestamp
+  * end_timestamp : timestamp
   branch : varchar
   * energy_source : varchar
   * exchange_right : bool
